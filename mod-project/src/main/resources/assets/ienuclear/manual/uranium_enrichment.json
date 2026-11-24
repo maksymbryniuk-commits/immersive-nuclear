@@ -1,1 +1,20 @@
-{}
+{
+  "plates_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:crafting_fuel_access_hatch",
+      "ienuclear:crafting_heat_vent",
+      "ienuclear:crafting_reactor_plating",
+      "ienuclear:crafting_heat_exchanger",
+      "ienuclear:crafting_neutron_reflector"
+    ]
+  },
+  "fuel_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:crafting_nuclear_fuel_rod",
+      "ienuclear:crafting_enriched_fuel_rod",
+      "ienuclear:crafting_mox_fuel_capsule"
+    ]
+  }
+}

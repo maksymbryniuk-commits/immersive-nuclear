@@ -1,10 +1,15 @@
-Uranium Enrichment & Coolant
-Immersive Engineering Fuel Cycle
+Fuel Cycle & IC2 Reactor Plates
+Step-by-Step Crafting Guide
 
-Use Immersive Engineering multiblock machines to manufacture nuclear fuel:
+=== STEP-BY-STEP FUEL PRODUCTION ===
+1. IE Crusher: Raw Uranium -> 2x Yellowcake Uranium (+35% Uranium Dust).
+2. IE Mixer: 1000 mB Water + 2x Yellowcake + 2x Redstone -> 1000 mB UF6.
+3. IE Refinery: 10 mB UF6 + 5 mB Ethanol -> 10 mB Enriched U-235 Solution.
+4. IE Metal Press (mold_rod): 2x Steel Plate -> Empty Fuel Capsule.
+5. IE Metal Press (mold_bullet_casing): 1x Uranium Ingot -> 2x Enriched Pellet.
+6. Crafting Table (capsules turn back into Empty Capsules when durability ends):
+<&fuel_craft>
+7. Reprocessing (IE Crusher): Depleted Capsule -> 2x Plutonium Dust (for 3x MOX).
 
-1. Crusher: Grind raw uranium into Yellowcake Uranium Concentrate.
-2. Mixer: Combine Yellowcake, Water, and Redstone into Uranium Hexafluoride (UF6).
-3. Refinery: Enrich UF6 with Ethanol to produce Enriched Uranium Solution (U-235).
-4. Metal Press: Stamp Steel Plates (Rod Mold) into Empty Fuel Rods and Uranium Ingots into Pellets.
-5. Heavy Coolant: Mix Water, Lapis, and Saltpeter Dust in the IE Mixer for 2.5x cooling efficiency.
+=== FUEL HATCH & IC2 PLATES ===
+<&plates_craft>

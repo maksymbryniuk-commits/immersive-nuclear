@@ -562,51 +562,196 @@ export function MultiblockBlueprintView() {
         )}
 
         {tab === 'ic2_grid' && (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-lg font-semibold text-amber-300">
-                IC2 Сітка завантаження (6×3), міцність капсул і пластини
-              </h2>
-              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                Усі паливні капсули тепер мають <strong className="text-emerald-300">шкалу міцності</strong>.
-                Коли міцність капсули закінчується, вона автоматично перетворюється на{' '}
-                <strong className="text-slate-100">Порожню паливну капсулу</strong> (`empty_fuel_rod`),
-                яку можна знову заправити!
-              </p>
+          <div className="space-y-8">
+            {/* Step-by-step Fuel Production */}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-lg font-semibold text-amber-300">
+                  Частина 1: Покроковий крафт ядерного палива (Кроки 1 → 7)
+                </h2>
+                <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                  Усі паливні капсули мають <strong className="text-emerald-300">шкалу міцності</strong>.
+                  Коли міцність капсули закінчується, вона перетворюється на{' '}
+                  <strong className="text-slate-100">Порожню паливну капсулу</strong>, яку можна знову заправити!
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {[
+                  {
+                    step: 'Крок 1 · IE Crusher',
+                    title: 'Урановий концентрат',
+                    detail: 'Сирий уран → 2× Yellowcake Uranium (+35% пил урану)',
+                  },
+                  {
+                    step: 'Крок 2 · IE Mixer',
+                    title: 'Гексафторид урану (UF6)',
+                    detail: '1000 mB Води + 2× Yellowcake + 2× Редстоун → 1000 mB UF6',
+                  },
+                  {
+                    step: 'Крок 3 · IE Refinery',
+                    title: 'Збагачений розчин U-235',
+                    detail: '10 mB UF6 + 5 mB Етанол → 10 mB Розчин U-235',
+                  },
+                  {
+                    step: 'Крок 4 · IE Metal Press',
+                    title: 'Порожня паливна капсула',
+                    detail: '2× Сталева пластина + Форма стрижня (mold_rod)',
+                  },
+                  {
+                    step: 'Крок 5 · IE Metal Press',
+                    title: 'Паливні таблетки',
+                    detail: '1× Злиток урану + Форма гільзи (mold_bullet_casing) → 2× Таблетки',
+                  },
+                  {
+                    step: 'Крок 7 · IE Crusher (Переробка)',
+                    title: 'Плутоній Pu-239 (для MOX)',
+                    detail: 'Відпрацьована капсула → 2× Плутонієвий пил (+50% Порожня капсула)',
+                  },
+                ].map((s) => (
+                  <div
+                    key={s.step}
+                    className="bg-[#0B0E14] border border-slate-800 rounded-xl p-3.5 space-y-1"
+                  >
+                    <div className="text-[11px] font-mono text-cyan-400">{s.step}</div>
+                    <div className="text-sm font-semibold text-slate-100">{s.title}</div>
+                    <div className="text-xs text-slate-300">{s.detail}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Step 6: 3x3 Crafting Grids for Fuel Capsules */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-2">
+                {[
+                  {
+                    title: 'Крок 6А · Стандартна капсула (1×)',
+                    out: '2400 міцн.',
+                    grid: [
+                      '—', 'Таблетка U-235', '—',
+                      'Таблетка U-235', 'Порожня капсула', 'Таблетка U-235',
+                      '—', 'Таблетка U-235', '—',
+                    ],
+                  },
+                  {
+                    title: 'Крок 6Б · Збагачена U-235 (2×)',
+                    out: '4800 міцн.',
+                    grid: [
+                      'Таблетка U-235', 'Відро U-235', 'Таблетка U-235',
+                      'Свинцева пл.', 'Порожня капсула', 'Свинцева пл.',
+                      'Таблетка U-235', 'Відро U-235', 'Таблетка U-235',
+                    ],
+                  },
+                  {
+                    title: 'Крок 7Б · MOX-капсула Pu/U (3×)',
+                    out: '3600 міцн.',
+                    grid: [
+                      'Плутоній', 'Таблетка U-235', 'Плутоній',
+                      'Свинцева пл.', 'Порожня капсула', 'Свинцева пл.',
+                      'Плутоній', 'Таблетка U-235', 'Плутоній',
+                    ],
+                  },
+                ].map((recipe) => (
+                  <div
+                    key={recipe.title}
+                    className="bg-[#0B0E14] border border-slate-800 rounded-xl p-4 space-y-3"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-semibold text-amber-300">{recipe.title}</span>
+                      <span className="text-[10px] font-mono text-emerald-400">{recipe.out}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1 bg-[#1C212B] p-2 rounded border border-slate-700">
+                      {recipe.grid.map((cell, i) => (
+                        <div
+                          key={i}
+                          className={`h-11 rounded border flex items-center justify-center p-1 text-center text-[9px] font-mono ${
+                            cell === '—'
+                              ? 'bg-[#0B0E14] border-slate-800 text-slate-600'
+                              : 'bg-[#10151E] border-slate-700 text-slate-200'
+                          }`}
+                        >
+                          {cell}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                {
-                  name: 'Тепловідвід (heat_vent)',
-                  craft: 'Залізні ґрати + Мідні пластини + Радіатор IE',
-                  effect: 'Активно відводить -5 тепла/тік (-9 поруч із теплообмінником).',
-                },
-                {
-                  name: 'Реакторна пластина (reactor_plating)',
-                  craft: 'Свинцеві + Сталеві пластини в шаховому порядку',
-                  effect: 'Пасивно поглинає тепло та знижує нагрів сусідніх капсул на -2.',
-                },
-                {
-                  name: 'Компонентний теплообмінник (heat_exchanger)',
-                  craft: 'Мідні пластини + Сталеві пластини + Електрум',
-                  effect: 'Підсилює сусідні Тепловідводи з -5 до -9 тепла/тік.',
-                },
-                {
-                  name: 'Нейтронний відбивач (neutron_reflector)',
-                  craft: 'Мідні пластини + Коксовий пил + Електрум',
-                  effect: 'Додає +35% потужності кожній суміжній паливній капсулі!',
-                },
-              ].map((c) => (
-                <div
-                  key={c.name}
-                  className="bg-[#0B0E14] border border-slate-800 rounded-xl p-4 space-y-1.5"
-                >
-                  <div className="text-sm font-semibold text-amber-300">{c.name}</div>
-                  <div className="text-xs text-slate-300">{c.effect}</div>
-                  <div className="text-[11px] font-mono text-cyan-400">Крафт: {c.craft}</div>
-                </div>
-              ))}
+            {/* Step-by-step IC2 Plates & Fuel Access Hatch */}
+            <div className="space-y-4 pt-4 border-t border-[#3E3426]">
+              <h2 className="text-lg font-semibold text-amber-300">
+                Частина 2: Покроковий крафт Люку палива та IC2-пластин
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  {
+                    name: 'Люк палива (fuel_access_hatch)',
+                    effect: 'Ставиться ЗВЕРХУ реактора. Відкриває 6×3 IC2-сітку.',
+                    grid: [
+                      'Корпус реактора', 'Мідна пластина', 'Корпус реактора',
+                      'Свинцева пл.', 'Воронка (Hopper)', 'Свинцева пл.',
+                      'Корпус реактора', 'Мідна пластина', 'Корпус реактора',
+                    ],
+                  },
+                  {
+                    name: 'Тепловідвід (heat_vent)',
+                    effect: 'Активно відводить -5 тепла/тік (-9 поруч із теплообмінником).',
+                    grid: [
+                      'Залізні ґрати', 'Мідна пластина', 'Залізні ґрати',
+                      'Мідна пластина', 'Радіатор IE', 'Мідна пластина',
+                      'Залізні ґрати', 'Мідна пластина', 'Залізні ґрати',
+                    ],
+                  },
+                  {
+                    name: 'Реакторна пластина (2×)',
+                    effect: 'Пасивно поглинає тепло та знижує нагрів сусідніх капсул на -2.',
+                    grid: [
+                      'Свинцева пл.', 'Сталева пл.', 'Свинцева пл.',
+                      'Сталева пл.', 'Свинцева пл.', 'Сталева пл.',
+                      'Свинцева пл.', 'Сталева пл.', 'Свинцева пл.',
+                    ],
+                  },
+                  {
+                    name: 'Теплообмінник (heat_exchanger)',
+                    effect: 'Підсилює сусідні Тепловідводи з -5 до -9 тепла/тік.',
+                    grid: [
+                      'Мідна пластина', 'Мідна пластина', 'Мідна пластина',
+                      'Сталева пл.', 'Злиток електруму', 'Сталева пл.',
+                      'Мідна пластина', 'Мідна пластина', 'Мідна пластина',
+                    ],
+                  },
+                  {
+                    name: 'Нейтронний відбивач (+35%)',
+                    effect: 'Підсилює суміжні паливні капсули на +35% потужності!',
+                    grid: [
+                      'Мідна пластина', 'Коксовий пил IE', 'Мідна пластина',
+                      'Коксовий пил IE', 'Злиток електруму', 'Коксовий пил IE',
+                      'Мідна пластина', 'Коксовий пил IE', 'Мідна пластина',
+                    ],
+                  },
+                ].map((c) => (
+                  <div
+                    key={c.name}
+                    className="bg-[#0B0E14] border border-slate-800 rounded-xl p-4 space-y-2.5"
+                  >
+                    <div>
+                      <div className="text-xs font-semibold text-amber-300">{c.name}</div>
+                      <div className="text-[11px] text-slate-300 mt-0.5">{c.effect}</div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1 bg-[#1C212B] p-2 rounded border border-slate-700">
+                      {c.grid.map((cell, i) => (
+                        <div
+                          key={i}
+                          className="h-11 bg-[#10151E] border border-slate-700 rounded flex items-center justify-center p-1 text-center text-[9px] font-mono text-slate-200"
+                        >
+                          {cell}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
