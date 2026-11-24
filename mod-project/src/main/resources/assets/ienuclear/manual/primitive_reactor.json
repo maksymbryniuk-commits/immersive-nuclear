@@ -1,0 +1,8 @@
+{
+  "primitive_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:crafting_primitive_reactor"
+    ]
+  }
+}

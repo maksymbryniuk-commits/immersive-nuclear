@@ -1,0 +1,9 @@
+Primitive Reactor (1x1)
+Standalone Starter FE Generator
+
+<&primitive_craft>
+
+A single-block nuclear generator requiring no multiblock, water, or steam turbine.
+1. Right-click with Heavy Coolant or Water bucket to fill the internal 8,000 mB tank.
+2. Insert a fuel capsule and engage the switch (512 - 1536 FE/t).
+3. Connect IE HV/MV Wire Connector strictly to the TOP face!

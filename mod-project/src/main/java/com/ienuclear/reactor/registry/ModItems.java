@@ -36,11 +36,11 @@ public class ModItems {
     public static final DeferredItem<Item> EMPTY_FUEL_ROD = ITEMS.registerSimpleItem(
             "empty_fuel_rod", new Item.Properties().stacksTo(16));
 
-    // Ядерне паливо (стандартне та збагачене) і відпрацьований стрижень
+    // Ядерне паливо з міцністю (після вичерпання міцності стає порожньою капсулою)
     public static final DeferredItem<Item> NUCLEAR_FUEL_ROD = ITEMS.registerSimpleItem(
-            "nuclear_fuel_rod", new Item.Properties().stacksTo(16));
+            "nuclear_fuel_rod", new Item.Properties().durability(2400));
     public static final DeferredItem<Item> ENRICHED_NUCLEAR_FUEL_ROD = ITEMS.registerSimpleItem(
-            "enriched_nuclear_fuel_rod", new Item.Properties().stacksTo(16));
+            "enriched_nuclear_fuel_rod", new Item.Properties().durability(4800));
     public static final DeferredItem<Item> DEPLETED_FUEL_ROD = ITEMS.registerSimpleItem(
             "depleted_fuel_rod", new Item.Properties().stacksTo(16));
 
@@ -69,7 +69,19 @@ public class ModItems {
     public static final DeferredItem<Item> PLUTONIUM_DUST = ITEMS.registerSimpleItem(
             "plutonium_dust", new Item.Properties());
     public static final DeferredItem<Item> MOX_FUEL_CAPSULE = ITEMS.registerSimpleItem(
-            "mox_fuel_capsule", new Item.Properties().stacksTo(16));
+            "mox_fuel_capsule", new Item.Properties().durability(3600));
+
+    // IC2-подібні пластини та компоненти для активної сітки люку палива
+    public static final DeferredItem<BlockItem> FUEL_ACCESS_HATCH_ITEM =
+            ITEMS.registerSimpleBlockItem("fuel_access_hatch", ModBlocks.FUEL_ACCESS_HATCH);
+    public static final DeferredItem<Item> HEAT_VENT = ITEMS.registerSimpleItem(
+            "heat_vent", new Item.Properties().durability(2000));
+    public static final DeferredItem<Item> REACTOR_PLATING = ITEMS.registerSimpleItem(
+            "reactor_plating", new Item.Properties().durability(3000));
+    public static final DeferredItem<Item> HEAT_EXCHANGER = ITEMS.registerSimpleItem(
+            "heat_exchanger", new Item.Properties().durability(2500));
+    public static final DeferredItem<Item> NEUTRON_REFLECTOR = ITEMS.registerSimpleItem(
+            "neutron_reflector", new Item.Properties().durability(1800));
     public static final DeferredItem<GeigerCounterItem> GEIGER_COUNTER = ITEMS.register(
             "geiger_counter",
             () -> new GeigerCounterItem(new Item.Properties().stacksTo(1))

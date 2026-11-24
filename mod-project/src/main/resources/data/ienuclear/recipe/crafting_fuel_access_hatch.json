@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SCS",
+    "LHL",
+    "SCS"
+  ],
+  "key": {
+    "S": { "item": "ienuclear:reactor_casing" },
+    "C": { "tag": "c:plates/copper" },
+    "L": { "tag": "c:plates/lead" },
+    "H": { "item": "minecraft:hopper" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:fuel_access_hatch"
+  }
+}

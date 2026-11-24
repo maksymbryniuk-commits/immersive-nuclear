@@ -3,6 +3,7 @@ package com.ienuclear.reactor.registry;
 import com.ienuclear.reactor.IENuclearMod;
 import com.ienuclear.reactor.block.CoolantInputPortBlock;
 import com.ienuclear.reactor.block.EnergyOutputPortBlock;
+import com.ienuclear.reactor.block.FuelAccessHatchBlock;
 import com.ienuclear.reactor.block.MoltenCoriumBlock;
 import com.ienuclear.reactor.block.PrimitiveReactorBlock;
 import com.ienuclear.reactor.block.ReactorControllerBlock;
@@ -174,6 +175,16 @@ public class ModBlocks {
             () -> new SteamInputPortBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.SNOW)
                     .strength(5.0f, 20.0f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL))
+    );
+
+    // v2.3: Верхній люк завантаження палива та IC2-пластин
+    public static final DeferredBlock<FuelAccessHatchBlock> FUEL_ACCESS_HATCH = BLOCKS.register(
+            "fuel_access_hatch",
+            () -> new FuelAccessHatchBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(5.5f, 25.0f)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL))
     );

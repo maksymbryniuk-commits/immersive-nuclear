@@ -1,6 +1,7 @@
 package com.ienuclear.reactor.registry;
 
 import com.ienuclear.reactor.IENuclearMod;
+import com.ienuclear.reactor.menu.FuelAccessHatchMenu;
 import com.ienuclear.reactor.menu.PrimitiveReactorMenu;
 import com.ienuclear.reactor.menu.ReactorControllerMenu;
 import com.ienuclear.reactor.menu.SteamTurbineMenu;
@@ -25,4 +26,8 @@ public class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<SteamTurbineMenu>> STEAM_TURBINE_MENU =
             MENUS.register("steam_turbine_menu", () ->
                     IMenuTypeExtension.create(SteamTurbineMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FuelAccessHatchMenu>> FUEL_ACCESS_HATCH_MENU =
+            MENUS.register("fuel_access_hatch_menu", () ->
+                    IMenuTypeExtension.create(FuelAccessHatchMenu::new));
 }

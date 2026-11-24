@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CGC",
+    "GDG",
+    "CGC"
+  ],
+  "key": {
+    "C": { "tag": "c:plates/copper" },
+    "G": { "tag": "c:dusts/coal_coke" },
+    "D": { "tag": "c:ingots/electrum" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:neutron_reflector"
+  }
+}

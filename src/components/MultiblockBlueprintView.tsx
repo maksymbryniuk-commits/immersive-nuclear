@@ -1,15 +1,18 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, ChevronLeft, ChevronRight, Layers, RotateCw } from 'lucide-react';
+import { BookOpen, Layers, RotateCw, ShieldAlert, Cpu, Flame, Wrench } from 'lucide-react';
 import { getTextureById } from '../modProject/pixelTextures';
+import { RAW_IE_TEXTURES } from '../modProject/rawIETextures';
+
+type EncyclopediaTab = 'reactor_3x3' | 'reactor_7x7' | 'turbine_3x3x5' | 'primitive_1x1' | 'ic2_grid';
 
 interface BlockMeta {
   id: string;
   name: string;
   short: string;
-  textureId: string;
-  count: number;
+  color: string;
+  textureId?: string;
+  rawTex?: string;
   role: string;
-  capability?: string;
 }
 
 const BLOCK_CATALOG: Record<string, BlockMeta> = {
@@ -17,497 +20,593 @@ const BLOCK_CATALOG: Record<string, BlockMeta> = {
     id: 'ienuclear:reactor_casing',
     name: 'Корпус реактора',
     short: 'RC',
+    color: '#475569',
     textureId: 'reactor_casing',
-    count: 20,
-    role: 'Свинцево-сталевий радіаційний захист зовнішніх стінок 3×3×3',
+    role: 'Свинцево-сталевий радіаційний захист стінок реактора',
   },
   glass: {
     id: 'ienuclear:reactor_glass',
-    name: 'Радіаційно-стійке скло',
+    name: 'Броньоване скло',
     short: 'GL',
+    color: '#38BDF8',
     textureId: 'reactor_glass',
-    count: 2,
-    role: 'Оглядовий блок на бічній та верхній гранях для візуального контролю активної зони',
+    role: 'Оглядове скло Panzerglass для контролю активної зони або ротора',
   },
   core: {
     id: 'ienuclear:reactor_core_rod',
     name: 'Стрижень активної зони',
     short: 'CORE',
+    color: '#10B981',
     textureId: 'reactor_core_rod',
-    count: 1,
-    role: 'Центральний блок активної зони (координата [1, 1, 1]), де відбувається реакція поділу',
+    role: 'Внутрішній блок поділу урану (від 1 у 3×3×3 до 27+ у 7×7×7)',
   },
   controller: {
     id: 'ienuclear:reactor_controller',
-    name: 'Контролер реактора',
+    name: 'Контролер реактора (ПК)',
     short: 'CTRL',
+    color: '#F59E0B',
     textureId: 'reactor_controller_front_active',
-    count: 1,
-    role: 'Лицьова панель управління: сканує мультиблок 3×3×3, відкриває GUI, керує запуском і SCRAM',
+    role: 'Лицьовий CRT-термінал керування (БЕЗ слотів палива — лише телеметрія та рубильник)',
+  },
+  hatch: {
+    id: 'ienuclear:fuel_access_hatch',
+    name: 'Люк палива (IC2 6×3)',
+    short: 'FUEL',
+    color: '#EAB308',
+    rawTex: RAW_IE_TEXTURES.heavy_engineering,
+    role: 'Ставиться ЗВЕРХУ реактора! Містить 18-слотову IC2-сітку для паливних капсул і пластин',
   },
   coolant: {
     id: 'ienuclear:coolant_input_port',
-    name: 'Порт входу охолоджувача',
-    short: 'IN',
+    name: 'Порт охолоджувача',
+    short: 'COOL',
+    color: '#06B6D4',
     textureId: 'coolant_input_port',
-    count: 1,
-    role: 'Приймає охолоджувальну рідину (16 000 mB) із труб Immersive Engineering Fluid Pipe або відром',
-    capability: 'Capabilities.FluidHandler.BLOCK',
+    role: 'Вхід Heavy Coolant або води для стримування температури',
   },
-  energy: {
+  water: {
+    id: 'ienuclear:water_input_port',
+    name: 'Порт входу води',
+    short: 'H2O',
+    color: '#2563EB',
+    rawTex: RAW_IE_TEXTURES.fluid_pump_side_in,
+    role: 'Вхід води, яка кипить у реакторі та перетворюється на Гарячу пару (1:10)',
+  },
+  steamOut: {
+    id: 'ienuclear:steam_output_port',
+    name: 'Порт виходу пари',
+    short: 'STM',
+    color: '#E2E8F0',
+    rawTex: RAW_IE_TEXTURES.fluid_pipe,
+    role: 'Автоматично подає Гарячу пару трубами IE до Парової турбіни',
+  },
+  turbineCtrl: {
+    id: 'ienuclear:steam_turbine',
+    name: 'Контролер турбіни',
+    short: 'TURB',
+    color: '#D97706',
+    rawTex: RAW_IE_TEXTURES.generator,
+    role: 'Передня панель турбіни 3×3×5 (показує RPM, статус та FE/t)',
+  },
+  turbineCasing: {
+    id: 'ienuclear:turbine_casing',
+    name: 'Корпус турбіни',
+    short: 'TC',
+    color: '#78350F',
+    rawTex: RAW_IE_TEXTURES.sheetmetal_steel,
+    role: 'Зовнішня оболонка парової турбіни 3×3×5',
+  },
+  turbineRotor: {
+    id: 'ienuclear:turbine_rotor',
+    name: 'Ротор турбіни',
+    short: 'ROT',
+    color: '#94A3B8',
+    rawTex: RAW_IE_TEXTURES.radiator,
+    role: '3 блоки по центру осі всередині турбіни (розкручується парою до 3600 RPM)',
+  },
+  steamIn: {
+    id: 'ienuclear:steam_input_port',
+    name: 'Порт входу пари',
+    short: 'SIN',
+    color: '#BAE6FD',
+    rawTex: RAW_IE_TEXTURES.fluid_pump_side_in,
+    role: 'Приймає Гарячу пару від реактора',
+  },
+  energyOut: {
     id: 'ienuclear:energy_output_port',
-    name: 'Порт виходу енергії (FE)',
+    name: 'Порт виходу FE',
     short: 'FE',
+    color: '#F97316',
     textureId: 'energy_output_port',
-    count: 1,
-    role: 'Акумулює до 1 000 000 FE та автоматично передає до 16 384 FE/t у HV/MV конектори IE',
-    capability: 'Capabilities.EnergyStorage.BLOCK',
+    role: 'Видає згенеровану енергію FE у HV/MV конектори IE',
   },
 };
 
 type BlockKey = keyof typeof BLOCK_CATALOG;
 
-// Exact 3x3x3 structure matching NuclearReactorMultiblock.java
-const STRUCTURE_3D: BlockKey[][][] = [
-  // Y = 0 (Bottom)
+// 3x3x3 Structure (with Top Fuel Access Hatch)
+const STRUCTURE_3X3: (BlockKey | null)[][][] = [
   [
     ['casing', 'casing', 'casing'],
     ['casing', 'casing', 'casing'],
     ['casing', 'casing', 'casing'],
   ],
-  // Y = 1 (Middle)
   [
-    ['casing', 'glass', 'casing'],
-    ['coolant', 'core', 'energy'],
+    ['casing', 'water', 'casing'],
+    ['coolant', 'core', 'steamOut'],
     ['casing', 'controller', 'casing'],
   ],
-  // Y = 2 (Top)
   [
     ['casing', 'casing', 'casing'],
+    ['casing', 'hatch', 'casing'],
     ['casing', 'glass', 'casing'],
-    ['casing', 'casing', 'casing'],
   ],
 ];
 
-const LAYER_TITLES = [
-  'Y = 0 · Нижній фундамент (3×3)',
-  'Y = 1 · Активна зона та порти вводу/виводу',
-  'Y = 2 · Верхній захист та оглядове скло',
+// 3x3x5 Turbine (width 3, height 3, depth 5)
+const STRUCTURE_TURBINE: (BlockKey | null)[][][] = [
+  Array.from({ length: 5 }, () => ['turbineCasing', 'turbineCasing', 'turbineCasing']),
+  [
+    ['turbineCasing', 'turbineCasing', 'turbineCasing'],
+    ['turbineCasing', 'turbineRotor', 'turbineCasing'],
+    ['steamIn', 'turbineRotor', 'energyOut'],
+    ['turbineCasing', 'turbineRotor', 'turbineCasing'],
+    ['turbineCasing', 'turbineCtrl', 'turbineCasing'],
+  ],
+  [
+    ['turbineCasing', 'turbineCasing', 'turbineCasing'],
+    ['turbineCasing', 'glass', 'turbineCasing'],
+    ['turbineCasing', 'glass', 'turbineCasing'],
+    ['turbineCasing', 'glass', 'turbineCasing'],
+    ['turbineCasing', 'turbineCasing', 'turbineCasing'],
+  ],
 ];
 
-export function MultiblockBlueprintView() {
-  const [selectedLayer, setSelectedLayer] = useState<number>(1);
-  const [showAllLayers, setShowAllLayers] = useState<boolean>(true);
-  const [exploded, setExploded] = useState<boolean>(false);
-  const [yawStep, setYawStep] = useState<number>(0); // 0..3 -> 0, 90, 180, 270 deg
-  const [manualPage, setManualPage] = useState<1 | 2>(1);
-  const [selectedBlockKey, setSelectedBlockKey] = useState<BlockKey>('controller');
+// 7x7x7 Mega Reactor (7x7x7)
+const STRUCTURE_7X7: (BlockKey | null)[][][] = Array.from({ length: 7 }, (_, y) =>
+  Array.from({ length: 7 }, (_, z) =>
+    Array.from({ length: 7 }, (_, x) => {
+      const onShell = x === 0 || x === 6 || y === 0 || y === 6 || z === 0 || z === 6;
+      if (onShell) {
+        if (y === 3 && x === 3 && z === 6) return 'controller';
+        if (y === 6 && x === 3 && z === 3) return 'hatch';
+        if (x === 0 && y === 3 && (z === 2 || z === 4)) return 'coolant';
+        if (x === 6 && y === 3 && (z === 2 || z === 4)) return 'steamOut';
+        if (z === 0 && y === 3 && (x === 2 || x === 4)) return 'water';
+        if (z === 6 && y >= 2 && y <= 4 && (x === 2 || x === 4)) return 'glass';
+        return 'casing';
+      }
+      if (x >= 2 && x <= 4 && y >= 2 && y <= 4 && z >= 2 && z <= 4) return 'core';
+      return null;
+    })
+  )
+);
 
-  const selectedBlock = BLOCK_CATALOG[selectedBlockKey];
+function getBlockImage(key: BlockKey): string {
+  const m = BLOCK_CATALOG[key];
+  if (m.textureId) return getTextureById(m.textureId)?.dataUrl ?? '';
+  return m.rawTex ?? '';
+}
 
-  const textures = useMemo(() => {
-    const map: Record<string, string> = {};
-    for (const [k, meta] of Object.entries(BLOCK_CATALOG)) {
-      map[k] = getTextureById(meta.textureId)?.dataUrl ?? '';
-    }
-    return map;
-  }, []);
+function IsometricViewer({
+  structure,
+  title,
+}: {
+  structure: (BlockKey | null)[][][];
+  title: string;
+}) {
+  const height = structure.length;
+  const depth = structure[0].length;
+  const width = structure[0][0].length;
 
-  // Build isometric blocks sorted painter's algorithm back-to-front for current yawStep
+  const [selectedLayer, setSelectedLayer] = useState<number>(Math.floor(height / 2));
+  const [showAll, setShowAll] = useState<boolean>(true);
+  const [yawStep, setYawStep] = useState<number>(0);
+  const [selectedKey, setSelectedKey] = useState<BlockKey | null>(null);
+
   const isoBlocks = useMemo(() => {
-    const blocks: {
-      x: number;
-      y: number;
-      z: number;
-      rx: number;
-      rz: number;
-      key: BlockKey;
-      depth: number;
-    }[] = [];
-
-    for (let y = 0; y < 3; y++) {
-      if (!showAllLayers && y !== selectedLayer) continue;
-      for (let z = 0; z < 3; z++) {
-        for (let x = 0; x < 3; x++) {
-          const key = STRUCTURE_3D[y][z][x];
-          // Rotate (x, z) around center (1, 1)
-          const cx = x - 1;
-          const cz = z - 1;
-          let rx = cx;
-          let rz = cz;
+    const blocks: { x: number; y: number; z: number; key: BlockKey; rx: number; rz: number }[] = [];
+    for (let y = 0; y < height; y++) {
+      if (!showAll && y !== selectedLayer) continue;
+      for (let z = 0; z < depth; z++) {
+        for (let x = 0; x < width; x++) {
+          const key = structure[y][z][x];
+          if (!key) continue;
+          let rx = x;
+          let rz = z;
           if (yawStep === 1) {
-            rx = -cz;
-            rz = cx;
+            rx = z;
+            rz = width - 1 - x;
           } else if (yawStep === 2) {
-            rx = -cx;
-            rz = -cz;
+            rx = width - 1 - x;
+            rz = depth - 1 - z;
           } else if (yawStep === 3) {
-            rx = cz;
-            rz = -cx;
+            rx = depth - 1 - z;
+            rz = x;
           }
-          const depth = rx + rz + y * 0.01;
-          blocks.push({ x, y, z, rx: rx + 1, rz: rz + 1, key, depth });
+          blocks.push({ x, y, z, key, rx, rz });
         }
       }
     }
+    blocks.sort((a, b) => a.rx + a.rz - (b.rx + b.rz) || a.y - b.y);
+    return blocks;
+  }, [structure, height, depth, width, showAll, selectedLayer, yawStep]);
 
-    return blocks.sort((a, b) => a.depth - b.depth || a.y - b.y);
-  }, [showAllLayers, selectedLayer, yawStep]);
+  const counts = useMemo(() => {
+    const map: Partial<Record<BlockKey, number>> = {};
+    for (const layer of structure) {
+      for (const row of layer) {
+        for (const k of row) {
+          if (k) map[k] = (map[k] ?? 0) + 1;
+        }
+      }
+    }
+    return Object.entries(map) as [BlockKey, number][];
+  }, [structure]);
 
-  const tileW = 32;
-  const tileH = 16;
-  const cubeH = 32;
-  const spread = exploded ? 14 : 0;
+  const activeKey = selectedKey ?? counts[0][0];
+  const scale = width >= 7 ? 15 : width >= 5 || depth >= 5 ? 21 : 30;
+  const tileW = scale;
+  const tileH = Math.round(scale * 0.5);
+  const blockH = Math.round(scale * 0.88);
+  const centerX = 200;
+  const baseY = width >= 7 ? 245 : 230;
 
   return (
-    <div className="space-y-8">
-      <div className="pb-6 border-b border-slate-800">
-        <p className="text-xs font-mono text-slate-400 mb-2">
-          Engineerʼs Manual (Immersive Engineering) · NuclearReactorMultiblock.java · 3×3×3
-        </p>
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-100 max-w-2xl">
-          Гайд Immersive Engineering та 3D-візуалізація мультиблоку
-        </h1>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* 3D Isometric Preview */}
+      <div className="lg:col-span-6 bg-[#17130E] border border-[#3E3426] rounded-xl p-4 space-y-4">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs font-mono text-amber-300">{title}</span>
+          <button
+            onClick={() => setYawStep((s) => (s + 1) % 4)}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono bg-[#2A241C] border border-[#473D2F] rounded text-slate-200 hover:border-amber-500/60"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+            {yawStep * 90}°
+          </button>
+        </div>
+
+        <div className="bg-[#120F0B] border border-[#322B20] rounded-lg p-2 flex items-center justify-center overflow-hidden">
+          <svg viewBox="0 0 400 300" className="w-full h-72 select-none">
+            {isoBlocks.map((b) => {
+              const cx = centerX + (b.rx - b.rz) * (tileW * 0.88);
+              const cy = baseY + (b.rx + b.rz) * (tileH * 0.65) - b.y * blockH;
+              const meta = BLOCK_CATALOG[b.key];
+              const isGlass = b.key === 'glass';
+              const isSelected = activeKey === b.key;
+
+              const topPts = `${cx},${cy - tileH} ${cx + tileW},${cy} ${cx},${cy + tileH} ${cx - tileW},${cy}`;
+              const leftPts = `${cx - tileW},${cy} ${cx},${cy + tileH} ${cx},${cy + tileH + blockH} ${cx - tileW},${cy + blockH}`;
+              const rightPts = `${cx + tileW},${cy} ${cx},${cy + tileH} ${cx},${cy + tileH + blockH} ${cx + tileW},${cy + blockH}`;
+
+              return (
+                <g
+                  key={`${b.x}-${b.y}-${b.z}`}
+                  onClick={() => setSelectedKey(b.key)}
+                  className="cursor-pointer"
+                  opacity={isGlass ? 0.55 : 1}
+                >
+                  <polygon
+                    points={topPts}
+                    fill={meta.color}
+                    stroke={isSelected ? '#FBBF24' : '#0B0E14'}
+                    strokeWidth={isSelected ? 1.5 : 0.8}
+                  />
+                  <polygon
+                    points={leftPts}
+                    fill={meta.color}
+                    fillOpacity={0.78}
+                    stroke={isSelected ? '#FBBF24' : '#0B0E14'}
+                    strokeWidth={isSelected ? 1.5 : 0.8}
+                  />
+                  <polygon
+                    points={rightPts}
+                    fill={meta.color}
+                    fillOpacity={0.55}
+                    stroke={isSelected ? '#FBBF24' : '#0B0E14'}
+                    strokeWidth={isSelected ? 1.5 : 0.8}
+                  />
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Layer Slicer */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <button
+            onClick={() => setShowAll((v) => !v)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono rounded border ${
+              showAll
+                ? 'bg-amber-500 text-slate-950 border-amber-400 font-semibold'
+                : 'bg-[#2A241C] text-slate-300 border-[#473D2F]'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            Усі шари
+          </button>
+          <div className="flex flex-wrap gap-1">
+            {Array.from({ length: height }, (_, lvl) => (
+              <button
+                key={lvl}
+                onClick={() => {
+                  setShowAll(false);
+                  setSelectedLayer(lvl);
+                }}
+                className={`px-2 py-1 text-xs font-mono rounded border ${
+                  !showAll && selectedLayer === lvl
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-semibold'
+                    : 'bg-[#2A241C] text-slate-300 border-[#473D2F]'
+                }`}
+              >
+                Y={lvl}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Engineer's Manual Book Spread */}
-      <div className="bg-[#121722] border border-slate-800 rounded-xl p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mb-6 border-b border-slate-800">
-          <div className="flex items-center gap-2.5 text-sm font-semibold text-amber-400">
-            <BookOpen className="w-4 h-4" />
-            <span>Engineerʼs Manual — Розділ «Immersive Nuclear»</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setManualPage(1)}
-              disabled={manualPage === 1}
-              className="p-1.5 rounded-lg border border-slate-700 text-slate-300 hover:text-white disabled:opacity-40"
-              aria-label="Попередня сторінка"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="text-xs font-mono text-slate-400 px-2 tabular-nums">
-              Стор. {manualPage} / 2
-            </span>
-            <button
-              onClick={() => setManualPage(2)}
-              disabled={manualPage === 2}
-              className="p-1.5 rounded-lg border border-slate-700 text-slate-300 hover:text-white disabled:opacity-40"
-              aria-label="Наступна сторінка"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+      {/* Bill of Materials */}
+      <div className="lg:col-span-6 space-y-4">
+        <div className="bg-[#0B0E14] border border-slate-800 rounded-xl p-4 space-y-3">
+          <div className="text-xs font-mono text-slate-400">Необхідні матеріали:</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {counts.map(([k, count]) => {
+              const m = BLOCK_CATALOG[k];
+              return (
+                <button
+                  key={k}
+                  onClick={() => setSelectedKey(k)}
+                  className={`flex items-center gap-3 p-2.5 rounded-lg border text-left transition-colors ${
+                    activeKey === k
+                      ? 'bg-amber-500/10 border-amber-500/60'
+                      : 'bg-[#121722] border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div
+                    className="w-7 h-7 rounded shrink-0 flex items-center justify-center border border-slate-700 overflow-hidden bg-slate-950"
+                    style={{ backgroundColor: getBlockImage(k) ? undefined : m.color }}
+                  >
+                    {getBlockImage(k) && (
+                      <img
+                        src={getBlockImage(k)}
+                        alt={m.name}
+                        className="w-full h-full"
+                        style={{ imageRendering: 'pixelated' }}
+                      />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-medium text-slate-100 truncate">
+                      {count}× {m.name}
+                    </div>
+                    <div className="text-[10px] font-mono text-slate-400 truncate">{m.id}</div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {manualPage === 1 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Book Page: Live Interactive 3D Texture-Mapped Multiblock */}
-            <div className="lg:col-span-6 bg-[#1C1915] border border-[#3B3328] rounded-xl p-5 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-mono text-amber-300">
-                  &lt;&amp;nuclear_reactor_mb&gt; · 3D-проекція
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setYawStep((s) => (s + 1) % 4)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono bg-[#2A241C] border border-[#473D2F] rounded text-amber-200 hover:border-amber-500/60 transition-colors whitespace-nowrap"
-                  >
-                    <RotateCw className="w-3.5 h-3.5" />
-                    Повернути ({yawStep * 90}°)
-                  </button>
-                  <button
-                    onClick={() => setExploded((e) => !e)}
-                    className={`px-2.5 py-1 text-xs font-mono rounded border transition-colors whitespace-nowrap ${
-                      exploded
-                        ? 'bg-amber-500/20 border-amber-500 text-amber-200'
-                        : 'bg-[#2A241C] border-[#473D2F] text-slate-300'
-                    }`}
-                  >
-                    {exploded ? 'Зібрати' : 'Рознести'}
-                  </button>
-                </div>
-              </div>
+        <div className="bg-[#0B0E14] border border-slate-800 rounded-xl p-4 space-y-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-amber-300">
+              {BLOCK_CATALOG[activeKey].name}
+            </span>
+            <span className="text-xs font-mono text-slate-400">{BLOCK_CATALOG[activeKey].id}</span>
+          </div>
+          <p className="text-xs text-slate-300 leading-relaxed">{BLOCK_CATALOG[activeKey].role}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-              {/* Interactive Isometric 3D Canvas */}
-              <div className="bg-[#12100D] border border-[#2E271E] rounded-lg h-[310px] flex items-center justify-center overflow-hidden relative">
-                <div
-                  className="relative"
-                  style={{
-                    width: 280,
-                    height: 260,
-                  }}
-                >
-                  {isoBlocks.map((b) => {
-                    const isoX = (b.rx - b.rz) * (tileW + spread * 0.45);
-                    const isoY =
-                      (b.rx + b.rz) * (tileH + spread * 0.22) -
-                      b.y * (cubeH + spread * 0.9);
-                    const left = 140 + isoX - tileW;
-                    const top = 165 + isoY - cubeH;
-                    const texUrl = textures[b.key];
-                    const isSelected = b.key === selectedBlockKey;
-                    const isGlass = b.key === 'glass';
+export function MultiblockBlueprintView() {
+  const [tab, setTab] = useState<EncyclopediaTab>('reactor_3x3');
 
-                    return (
-                      <button
-                        key={`${b.x}-${b.y}-${b.z}`}
-                        onClick={() => setSelectedBlockKey(b.key)}
-                        title={`${BLOCK_CATALOG[b.key].name} [${b.x}, ${b.y}, ${b.z}]`}
-                        className="absolute transition-all duration-200 group focus:outline-none"
-                        style={{
-                          left: `${left}px`,
-                          top: `${top}px`,
-                          width: `${tileW * 2}px`,
-                          height: `${cubeH + tileH * 2}px`,
-                          opacity: isGlass ? 0.78 : 1,
-                        }}
-                      >
-                        {/* Top Face */}
-                        <div
-                          className="absolute overflow-hidden"
-                          style={{
-                            width: `${tileW}px`,
-                            height: `${tileW}px`,
-                            left: `${tileW}px`,
-                            top: `${tileH}px`,
-                            transformOrigin: '0 0',
-                            transform: 'rotate(210deg) skewX(-30deg) scaleY(0.864)',
-                            backgroundImage: `url(${texUrl})`,
-                            backgroundSize: '100% 100%',
-                            imageRendering: 'pixelated',
-                            filter: isSelected ? 'brightness(1.35)' : 'brightness(1.08)',
-                            boxShadow: isSelected ? 'inset 0 0 0 2px #F59E0B' : 'inset 0 0 0 1px rgba(0,0,0,0.25)',
-                          }}
-                        />
-                        {/* Left Face */}
-                        <div
-                          className="absolute overflow-hidden"
-                          style={{
-                            width: `${tileW}px`,
-                            height: `${cubeH}px`,
-                            left: `0px`,
-                            top: `${tileH}px`,
-                            transformOrigin: '0 0',
-                            transform: 'skewY(30deg) scaleY(1)',
-                            backgroundImage: `url(${texUrl})`,
-                            backgroundSize: '100% 100%',
-                            imageRendering: 'pixelated',
-                            filter: isSelected ? 'brightness(1.25)' : 'brightness(0.85)',
-                            boxShadow: isSelected ? 'inset 0 0 0 2px #F59E0B' : 'inset 0 0 0 1px rgba(0,0,0,0.35)',
-                          }}
-                        />
-                        {/* Right Face */}
-                        <div
-                          className="absolute overflow-hidden"
-                          style={{
-                            width: `${tileW}px`,
-                            height: `${cubeH}px`,
-                            left: `${tileW}px`,
-                            top: `${tileH * 2}px`,
-                            transformOrigin: '0 0',
-                            transform: 'skewY(-30deg) scaleY(1)',
-                            backgroundImage: `url(${texUrl})`,
-                            backgroundSize: '100% 100%',
-                            imageRendering: 'pixelated',
-                            filter: isSelected ? 'brightness(1.15)' : 'brightness(0.68)',
-                            boxShadow: isSelected ? 'inset 0 0 0 2px #F59E0B' : 'inset 0 0 0 1px rgba(0,0,0,0.4)',
-                          }}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-6 border-b border-slate-800">
+        <div>
+          <p className="text-xs font-mono text-amber-400 mb-2">
+            Engineer&apos;s Manual · Immersive Nuclear v2.3
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-100">
+            Енциклопедія реакторів, турбіни та IC2-пластин
+          </h1>
+        </div>
+      </div>
 
-              {/* Layer Filter Controls */}
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <button
-                  onClick={() => setShowAllLayers((v) => !v)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded border transition-colors whitespace-nowrap ${
-                    showAllLayers
-                      ? 'bg-amber-500 text-slate-950 border-amber-400 font-semibold'
-                      : 'bg-[#2A241C] text-slate-300 border-[#473D2F]'
-                  }`}
-                >
-                  <Layers className="w-3.5 h-3.5" />
-                  Усі шари
-                </button>
+      {/* 5 Separate Encyclopedia Tabs */}
+      <div className="flex flex-wrap gap-2">
+        {(
+          [
+            { id: 'reactor_3x3', label: 'Реактор 3×3×3', icon: Cpu },
+            { id: 'reactor_7x7', label: 'Мегареактор 7×7×7', icon: Flame },
+            { id: 'turbine_3x3x5', label: 'Парова турбіна 3×3×5', icon: RotateCw },
+            { id: 'primitive_1x1', label: 'Одноблочний 1×1 (+Крафт)', icon: Wrench },
+            { id: 'ic2_grid', label: 'IC2 Сітка та пластини', icon: ShieldAlert },
+          ] as const
+        ).map((item) => {
+          const Icon = item.icon;
+          const active = tab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setTab(item.id)}
+              className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-lg border transition-colors ${
+                active
+                  ? 'bg-amber-500 text-slate-950 border-amber-400 font-semibold'
+                  : 'bg-[#121722] text-slate-300 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
 
-                <div className="flex items-center gap-1">
-                  {[0, 1, 2].map((lvl) => (
-                    <button
-                      key={lvl}
-                      onClick={() => {
-                        setShowAllLayers(false);
-                        setSelectedLayer(lvl);
-                      }}
-                      className={`px-3 py-1.5 text-xs font-mono rounded border transition-colors whitespace-nowrap ${
-                        !showAllLayers && selectedLayer === lvl
-                          ? 'bg-amber-500 text-slate-950 border-amber-400 font-semibold'
-                          : 'bg-[#2A241C] text-slate-300 border-[#473D2F] hover:text-white'
-                      }`}
-                    >
-                      Y = {lvl}
-                    </button>
-                  ))}
-                </div>
-              </div>
+      {/* Content */}
+      <div className="bg-[#1B1712] border-2 border-[#473D2F] rounded-xl p-6 shadow-xl">
+        {tab === 'reactor_3x3' && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-amber-300 font-semibold">
+              <BookOpen className="w-4 h-4" />
+              Ядерний реактор 3×3×3 (Паровий котел із верхнім люком IC2)
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Паливо більше не завантажується через Контролер! Поставте{' '}
+              <strong className="text-amber-300">Люк завантаження палива (Fuel Access Hatch)</strong>{' '}
+              на верхню кришку реактора — у ньому відкривається 6×3 сітка в стилі IndustrialCraft 2.
+            </p>
+            <IsometricViewer structure={STRUCTURE_3X3} title="Структура 3×3×3 (Y=2: Люк палива зверху)" />
+          </div>
+        )}
+
+        {tab === 'reactor_7x7' && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-amber-300 font-semibold">
+              <Flame className="w-4 h-4" />
+              Мегареактор 7×7×7 (27+ ядер активної зони)
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Динамічний сканер підтримує будь-який розмір від 3×3×3 до 7×7×7. У версії 7×7×7 всередині
+              розміщується куб із 27 блоків активної зони, 2+ Порти охолоджувача, 2+ Порти води та 2+
+              Порти виходу пари для одночасного живлення кількох Парових турбін 3×3×5.
+            </p>
+            <IsometricViewer structure={STRUCTURE_7X7} title="Структура 7×7×7 (27 ядер + 2× порти)" />
+          </div>
+        )}
+
+        {tab === 'turbine_3x3x5' && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-amber-300 font-semibold">
+              <RotateCw className="w-4 h-4" />
+              Мультиблокова Парова турбіна 3×3×5 (3600 RPM · до 36 000 FE/t)
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              3 в ширину × 3 у висоту × 5 у довжину. У центрі вздовж осі встановлюються 3×{' '}
+              <strong className="text-slate-100">Ротори турбіни</strong>. Приймає гарячу пару через{' '}
+              <strong className="text-cyan-300">Порт входу пари</strong> та видає FE через{' '}
+              <strong className="text-amber-300">Порт виходу енергії</strong>.
+            </p>
+            <IsometricViewer structure={STRUCTURE_TURBINE} title="Структура турбіни 3×3×5" />
+          </div>
+        )}
+
+        {tab === 'primitive_1x1' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-amber-300">
+                Одноблочний примітивний реактор (1×1)
+              </h2>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Автономний стартовий реактор, якому не потрібні мультиблок, вода або парова турбіна.
+              </p>
+              <ul className="space-y-2 text-xs text-slate-300 list-disc pl-4">
+                <li>
+                  <strong className="text-cyan-300">Охолоджувач:</strong> заливається прямо в блок
+                  (ПКМ відром Heavy Coolant або води, бак 8 000 mB).
+                </li>
+                <li>
+                  <strong className="text-amber-300">Вихід енергії FE:</strong>{' '}
+                  <u>ВИКЛЮЧНО ЗВЕРХУ блоку!</u> Поставте HV/MV конектор або конденсатор IE на верхню грань.
+                </li>
+                <li>
+                  <strong className="text-emerald-300">Потужність:</strong> 512 / 1024 / 1536 FE/t.
+                  Коли паливо вигорає — капсула стає Порожньою капсулою.
+                </li>
+              </ul>
             </div>
 
-            {/* Right Book Page: Ukrainian Manual Text + Bill of Materials */}
-            <div className="lg:col-span-6 space-y-5">
-              <div>
-                <h2 className="text-xl font-semibold text-amber-300 mb-1">
-                  Ядерний реактор (3×3×3)
-                </h2>
-                <p className="text-xs font-mono text-slate-400">
-                  Сторінка довідника: assets/ienuclear/manual/uk_ua/nuclear_reactor.txt
-                </p>
+            {/* 3x3 Crafting Grid for Primitive Reactor */}
+            <div className="bg-[#0B0E14] border border-slate-800 rounded-xl p-5 space-y-4">
+              <div className="text-xs font-mono text-amber-400">
+                Крафт одноблочного реактора (ienuclear:primitive_reactor):
               </div>
-
-              <p className="text-sm text-slate-300 leading-relaxed">
-                Мультиблоковий ядерний реактор перетворює енергію поділу урану в стабільний потік
-                Forge Energy (FE), повністю сумісний із високовольтними конекторами (HV/MV) та
-                рідинними трубами Immersive Engineering.
-              </p>
-
-              {/* Materials List with 16x16 icons */}
-              <div className="bg-[#0B0E14] border border-slate-800 rounded-xl p-4 space-y-3">
-                <div className="text-xs font-mono text-slate-400">
-                  Необхідні блоки (getTotalMaterials):
+              <div className="flex items-center justify-center gap-6">
+                <div className="grid grid-cols-3 gap-1.5 bg-[#1C212B] p-2.5 rounded border border-slate-700">
+                  {[
+                    'Свинцева пластина',
+                    'MV Конектор IE',
+                    'Свинцева пластина',
+                    'Сталева пластина',
+                    'Стрижень ядра',
+                    'Сталева пластина',
+                    'Свинцева пластина',
+                    'Відро (Bucket)',
+                    'Свинцева пластина',
+                  ].map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="w-20 h-16 bg-[#0F131A] border border-slate-700 rounded flex items-center justify-center p-1 text-center text-[10px] font-mono text-slate-200"
+                    >
+                      {item}
+                    </div>
+                  ))}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {(Object.entries(BLOCK_CATALOG) as [BlockKey, BlockMeta][]).map(([key, meta]) => {
-                    const isSelected = selectedBlockKey === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => setSelectedBlockKey(key)}
-                        className={`flex items-center gap-3 p-2.5 rounded-lg border text-left transition-colors ${
-                          isSelected
-                            ? 'bg-amber-500/10 border-amber-500/60'
-                            : 'bg-[#121722] border-slate-800 hover:border-slate-700'
-                        }`}
-                      >
-                        <img
-                          src={textures[key]}
-                          alt={meta.name}
-                          className="w-8 h-8 shrink-0 rounded-sm bg-slate-950"
-                          style={{ imageRendering: 'pixelated' }}
-                        />
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-medium text-slate-100 truncate">
-                            {meta.count}× {meta.name}
-                          </div>
-                          <div className="text-[10px] font-mono text-slate-400 truncate">
-                            {meta.id}
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
+                <span className="text-xl text-amber-400 font-bold">→</span>
+                <div className="w-24 h-20 bg-[#121722] border-2 border-amber-500/60 rounded-lg flex flex-col items-center justify-center p-2 text-center">
+                  <span className="text-xs font-semibold text-amber-300">1×</span>
+                  <span className="text-[11px] font-mono text-slate-100 mt-1">
+                    Примітивний реактор
+                  </span>
                 </div>
-              </div>
-
-              {/* Selected Block Info */}
-              <div className="bg-[#0B0E14] border border-slate-800 rounded-lg p-4 space-y-1.5">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-semibold text-slate-100">{selectedBlock.name}</span>
-                  <span className="text-xs font-mono text-amber-400">{selectedBlock.id}</span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">{selectedBlock.role}</p>
-                {selectedBlock.capability && (
-                  <p className="text-xs font-mono text-cyan-400">
-                    Capability: {selectedBlock.capability}
-                  </p>
-                )}
               </div>
             </div>
           </div>
-        ) : (
-          /* Page 2 of Engineer's Manual */
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-amber-300">
-                Збагачення урану та охолоджувач
+        )}
+
+        {tab === 'ic2_grid' && (
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-lg font-semibold text-amber-300">
+                IC2 Сітка завантаження (6×3), міцність капсул і пластини
               </h2>
-              <p className="text-xs font-mono text-slate-400">
-                Сторінка довідника: assets/ienuclear/manual/uk_ua/uranium_enrichment.txt
+              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                Усі паливні капсули тепер мають <strong className="text-emerald-300">шкалу міцності</strong>.
+                Коли міцність капсули закінчується, вона автоматично перетворюється на{' '}
+                <strong className="text-slate-100">Порожню паливну капсулу</strong> (`empty_fuel_rod`),
+                яку можна знову заправити!
               </p>
-              <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
-                <p>
-                  <strong className="text-slate-100">1. Дробарка (Crusher):</strong> подрібніть сирий
-                  уран у <span className="font-mono text-amber-300">yellowcake_uranium</span>.
-                </p>
-                <p>
-                  <strong className="text-slate-100">2. Змішувач (Mixer):</strong> розчиніть
-                  Yellowcake у воді з редстоуном для отримання гексафториду урану (UF6).
-                </p>
-                <p>
-                  <strong className="text-slate-100">3. Рафінер (Refinery):</strong> збагатіть UF6
-                  етанолом у збагачений розчин U-235.
-                </p>
-                <p>
-                  <strong className="text-slate-100">4. Металопрес (Metal Press):</strong>{' '}
-                  відштампуйте свинцево-сталеві пластини (mold_rod) у порожню герметичну капсулу та злитки урану в
-                  паливні таблетки.
-                </p>
-                <p>
-                  <strong className="text-slate-100">5. Важкий охолоджувач:</strong> змішайте в IE
-                  Mixer воду, лазурит та селітру (Saltpeter) — ефективність охолодження у 2.5 рази
-                  вища за воду. УВАГА: без охолоджувача реактор входить у тепловий розгін і при 1400°C вибухає (Meltdown)!
-                </p>
-              </div>
             </div>
 
-            {/* 2D Layer Slice Reference */}
-            <div className="bg-[#0B0E14] border border-slate-800 rounded-xl p-5 space-y-4">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-mono text-slate-400">
-                  {LAYER_TITLES[selectedLayer]}
-                </span>
-                <div className="flex gap-1">
-                  {[0, 1, 2].map((lvl) => (
-                    <button
-                      key={lvl}
-                      onClick={() => setSelectedLayer(lvl)}
-                      className={`px-2.5 py-1 text-xs font-mono rounded ${
-                        selectedLayer === lvl
-                          ? 'bg-amber-500 text-slate-950 font-semibold'
-                          : 'bg-[#121722] text-slate-400'
-                      }`}
-                    >
-                      Y={lvl}
-                    </button>
-                  ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                {
+                  name: 'Тепловідвід (heat_vent)',
+                  craft: 'Залізні ґрати + Мідні пластини + Радіатор IE',
+                  effect: 'Активно відводить -5 тепла/тік (-9 поруч із теплообмінником).',
+                },
+                {
+                  name: 'Реакторна пластина (reactor_plating)',
+                  craft: 'Свинцеві + Сталеві пластини в шаховому порядку',
+                  effect: 'Пасивно поглинає тепло та знижує нагрів сусідніх капсул на -2.',
+                },
+                {
+                  name: 'Компонентний теплообмінник (heat_exchanger)',
+                  craft: 'Мідні пластини + Сталеві пластини + Електрум',
+                  effect: 'Підсилює сусідні Тепловідводи з -5 до -9 тепла/тік.',
+                },
+                {
+                  name: 'Нейтронний відбивач (neutron_reflector)',
+                  craft: 'Мідні пластини + Коксовий пил + Електрум',
+                  effect: 'Додає +35% потужності кожній суміжній паливній капсулі!',
+                },
+              ].map((c) => (
+                <div
+                  key={c.name}
+                  className="bg-[#0B0E14] border border-slate-800 rounded-xl p-4 space-y-1.5"
+                >
+                  <div className="text-sm font-semibold text-amber-300">{c.name}</div>
+                  <div className="text-xs text-slate-300">{c.effect}</div>
+                  <div className="text-[11px] font-mono text-cyan-400">Крафт: {c.craft}</div>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 max-w-[230px] mx-auto">
-                {STRUCTURE_3D[selectedLayer].flat().map((key, idx) => (
-                  <button
-                    key={`${selectedLayer}-${idx}`}
-                    onClick={() => setSelectedBlockKey(key)}
-                    className={`aspect-square p-2 rounded-lg border flex flex-col items-center justify-center gap-1 ${
-                      selectedBlockKey === key
-                        ? 'border-amber-400 bg-amber-500/15'
-                        : 'border-slate-700 bg-[#121722]'
-                    }`}
-                  >
-                    <img
-                      src={textures[key]}
-                      alt={BLOCK_CATALOG[key].name}
-                      className="w-8 h-8"
-                      style={{ imageRendering: 'pixelated' }}
-                    />
-                    <span className="text-[10px] font-mono text-slate-300">
-                      {BLOCK_CATALOG[key].short}
-                    </span>
-                  </button>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
         )}

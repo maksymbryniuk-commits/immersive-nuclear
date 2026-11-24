@@ -165,7 +165,7 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
                 reactor.currentFePerTick = generated;
 
                 if (reactor.fuelTicksRemaining == 0) {
-                    reactor.inventory.insertItem(DEPLETED_SLOT, new ItemStack(ModItems.DEPLETED_FUEL_ROD.get(), 1), false);
+                    reactor.inventory.insertItem(DEPLETED_SLOT, new ItemStack(ModItems.EMPTY_FUEL_ROD.get(), 1), false);
                 }
             } else {
                 reactor.active = false;

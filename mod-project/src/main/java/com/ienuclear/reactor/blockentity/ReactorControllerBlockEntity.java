@@ -4,7 +4,6 @@ import com.ienuclear.reactor.block.ReactorControllerBlock;
 import com.ienuclear.reactor.menu.ReactorControllerMenu;
 import com.ienuclear.reactor.registry.ModBlockEntities;
 import com.ienuclear.reactor.registry.ModBlocks;
-import com.ienuclear.reactor.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,21 +14,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -37,10 +32,8 @@ import java.util.List;
 
 /**
  * Контролер масштабованого мультиблокового ядерного реактора (від 3x3x3 до 7x7x7):
- * - Вхід 1: Охолоджувач (Coolant Input Port) — стримує температуру активної зони
- * - Вхід 2: Вода (Water Input Port) — випаровується у гарячу пару
- * - Вихід: Гаряча пара (Steam Output Port) — подається по трубах у Парову турбіну
- * - Чим більше блоків Reactor Core Rod всередині (1..125), тим вища паропродуктивність!
+ * - Паливо та IC2-пластини завантажуються виключно через верхній Люк завантаження палива (FuelAccessHatch)
+ * - Сам контролер є чистим терміналом керування і телеметрії
  */
 public class ReactorControllerBlockEntity extends BlockEntity implements MenuProvider {
     public static final int AMBIENT_TEMP = 20;
@@ -49,39 +42,19 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
     public static final int SCRAM_TEMP = 1150;
     public static final int MELTDOWN_TEMP = 1400;
     public static final int MAX_TEMP = 1600;
-    public static final int FUEL_SLOT = 0;
-    public static final int DEPLETED_SLOT = 1;
-
-    private final ItemStackHandler inventory = new ItemStackHandler(2) {
-        @Override
-        protected void onContentsChanged(int slot) {
-            setChanged();
-        }
-
-        @Override
-        public boolean isItemValid(int slot, ItemStack stack) {
-            if (slot == FUEL_SLOT) {
-                return stack.is(ModItems.NUCLEAR_FUEL_ROD.get())
-                        || stack.is(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get())
-                        || stack.is(ModItems.MOX_FUEL_CAPSULE.get());
-            }
-            return false;
-        }
-    };
 
     private boolean active = false;
     private boolean multiblockValid = false;
     private int temperature = AMBIENT_TEMP;
-    private int fuelTicksRemaining = 0;
-    private int maxFuelTicks = 0;
     private int currentSteamPerTick = 0;
-    private int currentFuelMultiplier = 1;
     private int controlRodInsertion = 0;
     private int coreCount = 0;
+    private int activeCapsulesCount = 0;
 
     private final List<BlockPos> cachedCoolantPorts = new ArrayList<>();
     private final List<BlockPos> cachedWaterPorts = new ArrayList<>();
     private final List<BlockPos> cachedSteamPorts = new ArrayList<>();
+    private final List<BlockPos> cachedFuelHatches = new ArrayList<>();
     @Nullable
     private BlockPos cachedCenterPos = null;
 
@@ -99,10 +72,9 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                 case 7 -> currentSteamPerTick;
                 case 8 -> active ? 1 : 0;
                 case 9 -> multiblockValid ? 1 : 0;
-                case 10 -> fuelTicksRemaining;
-                case 11 -> maxFuelTicks;
-                case 12 -> controlRodInsertion;
-                case 13 -> coreCount;
+                case 10 -> controlRodInsertion;
+                case 11 -> coreCount;
+                case 12 -> activeCapsulesCount;
                 default -> 0;
             };
         }
@@ -112,7 +84,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
 
         @Override
         public int getCount() {
-            return 14;
+            return 13;
         }
     };
 
@@ -120,7 +92,6 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         super(ModBlockEntities.REACTOR_CONTROLLER.get(), pos, state);
     }
 
-    public ItemStackHandler getInventory() { return inventory; }
     public ContainerData getData() { return data; }
     public int getTemperature() { return temperature; }
     public int getControlRodInsertion() { return controlRodInsertion; }
@@ -129,7 +100,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
 
     public double getRadiationLevel() {
         if (!active && temperature < 300) return 0.1;
-        double base = active ? (1.2 * currentFuelMultiplier * Math.max(1, coreCount) * 0.4 * (1.0 - controlRodInsertion / 100.0)) : 0.2;
+        double base = active ? (1.2 * Math.max(1, activeCapsulesCount) * 0.4 * (1.0 - controlRodInsertion / 100.0)) : 0.2;
         if (temperature >= WARNING_TEMP) {
             base += (temperature - WARNING_TEMP) * 0.08;
         }
@@ -188,14 +159,10 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                 || bs.is(ModBlocks.COOLANT_INPUT_PORT.get())
                 || bs.is(ModBlocks.WATER_INPUT_PORT.get())
                 || bs.is(ModBlocks.STEAM_OUTPUT_PORT.get())
+                || bs.is(ModBlocks.FUEL_ACCESS_HATCH.get())
                 || bs.is(ModBlocks.REACTOR_CONTROLLER.get());
     }
 
-    /**
-     * Динамічний сканер масштабованого мультиблоку від 3x3x3 до 7x7x7:
-     * - Оболонка: Reactor Casing, Reactor Glass, 1+ Coolant Port, 1+ Water Port, 1+ Steam Port, 1 Controller
-     * - Всередині: 1+ Reactor Core Rod (або повітря)
-     */
     public boolean validateMultiblock() {
         if (level == null) return false;
         Direction facing = getBlockState().getValue(ReactorControllerBlock.FACING);
@@ -204,27 +171,17 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         Direction right = facing.getClockWise();
 
         int leftDist = 0;
-        while (leftDist < 6 && isShellBlock(level.getBlockState(worldPosition.relative(left, leftDist + 1)))) {
-            leftDist++;
-        }
+        while (leftDist < 6 && isShellBlock(level.getBlockState(worldPosition.relative(left, leftDist + 1)))) leftDist++;
         int rightDist = 0;
-        while (rightDist < 6 && isShellBlock(level.getBlockState(worldPosition.relative(right, rightDist + 1)))) {
-            rightDist++;
-        }
+        while (rightDist < 6 && isShellBlock(level.getBlockState(worldPosition.relative(right, rightDist + 1)))) rightDist++;
         int downDist = 0;
-        while (downDist < 6 && isShellBlock(level.getBlockState(worldPosition.below(downDist + 1)))) {
-            downDist++;
-        }
+        while (downDist < 6 && isShellBlock(level.getBlockState(worldPosition.below(downDist + 1)))) downDist++;
         int upDist = 0;
-        while (upDist < 6 && isShellBlock(level.getBlockState(worldPosition.above(upDist + 1)))) {
-            upDist++;
-        }
+        while (upDist < 6 && isShellBlock(level.getBlockState(worldPosition.above(upDist + 1)))) upDist++;
 
         BlockPos frontCorner = worldPosition.relative(left, leftDist).below(downDist);
         int backDist = 0;
-        while (backDist < 6 && isShellBlock(level.getBlockState(frontCorner.relative(back, backDist + 1)))) {
-            backDist++;
-        }
+        while (backDist < 6 && isShellBlock(level.getBlockState(frontCorner.relative(back, backDist + 1)))) backDist++;
 
         int width = leftDist + rightDist + 1;
         int height = downDist + upDist + 1;
@@ -248,6 +205,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         List<BlockPos> foundCoolant = new ArrayList<>();
         List<BlockPos> foundWater = new ArrayList<>();
         List<BlockPos> foundSteam = new ArrayList<>();
+        List<BlockPos> foundHatches = new ArrayList<>();
         int foundCores = 0;
 
         for (int x = minX; x <= maxX; x++) {
@@ -260,7 +218,6 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                     if (onShell) {
                         if (p.equals(worldPosition)) continue;
                         if (bs.is(ModBlocks.REACTOR_CONTROLLER.get())) {
-                            // Тільки один контролер на мультиблок
                             multiblockValid = false;
                             return false;
                         } else if (bs.is(ModBlocks.COOLANT_INPUT_PORT.get())) {
@@ -269,6 +226,13 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                             foundWater.add(p);
                         } else if (bs.is(ModBlocks.STEAM_OUTPUT_PORT.get())) {
                             foundSteam.add(p);
+                        } else if (bs.is(ModBlocks.FUEL_ACCESS_HATCH.get())) {
+                            if (y != maxY) {
+                                // Люк палива має стояти зверху реактора!
+                                multiblockValid = false;
+                                return false;
+                            }
+                            foundHatches.add(p);
                         } else if (!bs.is(ModBlocks.REACTOR_CASING.get()) && !bs.is(ModBlocks.REACTOR_GLASS.get())) {
                             multiblockValid = false;
                             return false;
@@ -285,7 +249,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
             }
         }
 
-        if (foundCores < 1 || foundCoolant.isEmpty() || foundWater.isEmpty() || foundSteam.isEmpty()) {
+        if (foundCores < 1 || foundCoolant.isEmpty() || foundWater.isEmpty() || foundSteam.isEmpty() || foundHatches.isEmpty()) {
             multiblockValid = false;
             return false;
         }
@@ -296,6 +260,8 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         this.cachedWaterPorts.addAll(foundWater);
         this.cachedSteamPorts.clear();
         this.cachedSteamPorts.addAll(foundSteam);
+        this.cachedFuelHatches.clear();
+        this.cachedFuelHatches.addAll(foundHatches);
         this.coreCount = foundCores;
         this.cachedCenterPos = new BlockPos((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2);
         this.multiblockValid = true;
@@ -320,15 +286,22 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         double coreScale = 1.0 + Math.max(0, reactor.coreCount - 1) * 0.5;
 
         if (reactor.active && reactor.multiblockValid) {
-            if (reactor.fuelTicksRemaining <= 0) {
-                reactor.tryConsumeNextFuelRod();
-            }
+            int totalCapsules = 0;
+            double totalGridPower = 0.0;
+            int totalNetHeat = 0;
 
-            if (reactor.fuelTicksRemaining > 0) {
-                if (powerFactor > 0.0 && (powerFactor >= 0.75 || gameTime % 2 == 0)) {
-                    reactor.fuelTicksRemaining--;
+            for (BlockPos hp : reactor.cachedFuelHatches) {
+                if (level.getBlockEntity(hp) instanceof FuelAccessHatchBlockEntity hatch) {
+                    FuelAccessHatchBlockEntity.GridTickResult res =
+                            hatch.processGridTick(gameTime, powerFactor, reactor.temperature);
+                    totalCapsules += res.activeCapsules();
+                    totalGridPower += res.effectivePower();
+                    totalNetHeat += res.netHeatDelta();
                 }
+            }
+            reactor.activeCapsulesCount = totalCapsules;
 
+            if (totalCapsules > 0) {
                 int totalCoolant = reactor.getCoolantStored();
                 boolean hasCoolant = totalCoolant > 0;
 
@@ -343,23 +316,22 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                     int coolantCost = Math.max(1, (int) Math.round(baseCost * Math.sqrt(coreScale) * powerFactor));
                     int drained = reactor.drainCoolant(coolantCost);
                     int coolingPower = heavy ? 16 : 6;
-                    int baseHeat = reactor.currentFuelMultiplier == 3 ? 15
-                            : (reactor.currentFuelMultiplier == 2 ? 10 : 6);
-                    int normalHeat = Math.max(1, (int) Math.round(baseHeat * Math.sqrt(coreScale) * powerFactor));
+                    int heatDelta = Math.max(-coolingPower, totalNetHeat - coolingPower);
 
                     if (drained > 0) {
-                        if (reactor.temperature < OPTIMAL_TEMP) {
-                            reactor.temperature = Math.min(OPTIMAL_TEMP, reactor.temperature + Math.max(2, normalHeat / 2));
+                        if (reactor.temperature < OPTIMAL_TEMP && totalNetHeat > 0) {
+                            reactor.temperature = Math.min(OPTIMAL_TEMP, reactor.temperature + Math.max(2, totalNetHeat / 3));
                         } else {
-                            reactor.temperature = Math.max(AMBIENT_TEMP + 100, reactor.temperature + normalHeat - coolingPower);
+                            reactor.temperature = Math.max(AMBIENT_TEMP + 80,
+                                    Math.min(MAX_TEMP, reactor.temperature + heatDelta));
                         }
                     } else {
-                        int runaway = (int) Math.max(10, Math.round((reactor.currentFuelMultiplier * 14) * powerFactor));
+                        int runaway = Math.max(10, totalNetHeat + 8);
                         reactor.temperature = Math.min(MAX_TEMP, reactor.temperature + runaway);
                     }
                 } else {
                     // БЕЗ ОХОЛОДЖУВАЧА РЕАКТОР СТРІМКО ПЕРЕГРІВАЄТЬСЯ І ВИБУХАЄ!
-                    int runawayHeat = (int) Math.max(12, Math.round((reactor.currentFuelMultiplier * 16 + 8) * powerFactor));
+                    int runawayHeat = Math.max(12, totalNetHeat + 14);
                     reactor.temperature = Math.min(MAX_TEMP, reactor.temperature + runawayHeat);
                 }
 
@@ -380,7 +352,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                 } else if (powerFactor > 0.0 && reactor.temperature >= 80) {
                     // КИП'ЯТІННЯ ВОДИ В ГАРЯЧУ ПАРУ (1 mB води -> 10 mB гарячої пари)
                     int desiredWater = (int) Math.max(1, Math.round(
-                            8.0 * reactor.currentFuelMultiplier * coreScale * powerFactor * Math.min(1.6, reactor.temperature / 600.0)
+                            7.0 * totalGridPower * coreScale * Math.min(1.6, reactor.temperature / 600.0)
                     ));
                     int waterUsed = reactor.drainWater(desiredWater);
                     int steamProduced = waterUsed * 10;
@@ -391,16 +363,13 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                 } else {
                     reactor.currentSteamPerTick = 0;
                 }
-
-                if (reactor.fuelTicksRemaining == 0) {
-                    reactor.outputDepletedRod();
-                }
             } else {
                 reactor.active = false;
                 reactor.currentSteamPerTick = 0;
                 reactor.updateBlockState();
             }
         } else {
+            reactor.activeCapsulesCount = 0;
             reactor.currentSteamPerTick = 0;
             if (reactor.temperature > AMBIENT_TEMP && gameTime % 5 == 0) {
                 reactor.temperature = Math.max(AMBIENT_TEMP, reactor.temperature - 1);
@@ -445,34 +414,6 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         }
     }
 
-    private void tryConsumeNextFuelRod() {
-        ItemStack fuelStack = inventory.getStackInSlot(FUEL_SLOT);
-        if (fuelStack.isEmpty()) return;
-        ItemStack depletedOut = inventory.getStackInSlot(DEPLETED_SLOT);
-        if (!depletedOut.isEmpty() && depletedOut.getCount() >= depletedOut.getMaxStackSize()) return;
-
-        if (fuelStack.is(ModItems.MOX_FUEL_CAPSULE.get())) {
-            this.currentFuelMultiplier = 3;
-            this.maxFuelTicks = 3600;
-            this.fuelTicksRemaining = 3600;
-            fuelStack.shrink(1);
-        } else if (fuelStack.is(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get())) {
-            this.currentFuelMultiplier = 2;
-            this.maxFuelTicks = 4800;
-            this.fuelTicksRemaining = 4800;
-            fuelStack.shrink(1);
-        } else if (fuelStack.is(ModItems.NUCLEAR_FUEL_ROD.get())) {
-            this.currentFuelMultiplier = 1;
-            this.maxFuelTicks = 2400;
-            this.fuelTicksRemaining = 2400;
-            fuelStack.shrink(1);
-        }
-    }
-
-    private void outputDepletedRod() {
-        inventory.insertItem(DEPLETED_SLOT, new ItemStack(ModItems.DEPLETED_FUEL_ROD.get(), 1), false);
-    }
-
     private void triggerNuclearMeltdown(Level level, BlockPos pos, BlockPos center) {
         this.active = false;
         this.temperature = MAX_TEMP;
@@ -508,7 +449,6 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         }
     }
 
-    // --- Агрегація кількох портів для великих реакторів (3x3x3..7x7x7) ---
     private int getCoolantStored() {
         if (level == null) return 0;
         int sum = 0;
@@ -591,14 +531,6 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         }
     }
 
-    public void dropInventory(Level level, BlockPos pos) {
-        SimpleContainer container = new SimpleContainer(inventory.getSlots());
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            container.setItem(i, inventory.getStackInSlot(i));
-        }
-        Containers.dropContents(level, pos, container);
-    }
-
     @Override
     public Component getDisplayName() {
         return Component.translatable("block.ienuclear.reactor_controller");
@@ -613,12 +545,8 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        tag.put("Inventory", inventory.serializeNBT(registries));
         tag.putBoolean("Active", active);
         tag.putInt("Temperature", temperature);
-        tag.putInt("FuelTicks", fuelTicksRemaining);
-        tag.putInt("MaxFuelTicks", maxFuelTicks);
-        tag.putInt("FuelMultiplier", currentFuelMultiplier);
         tag.putInt("ControlRods", controlRodInsertion);
         tag.putInt("CoreCount", coreCount);
     }
@@ -626,12 +554,8 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        inventory.deserializeNBT(registries, tag.getCompound("Inventory"));
         active = tag.getBoolean("Active");
         temperature = tag.getInt("Temperature");
-        fuelTicksRemaining = tag.getInt("FuelTicks");
-        maxFuelTicks = tag.getInt("MaxFuelTicks");
-        currentFuelMultiplier = Math.max(1, tag.getInt("FuelMultiplier"));
         controlRodInsertion = Math.max(0, Math.min(100, tag.getInt("ControlRods")));
         coreCount = tag.getInt("CoreCount");
     }

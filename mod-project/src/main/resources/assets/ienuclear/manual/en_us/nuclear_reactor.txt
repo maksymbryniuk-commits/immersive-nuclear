@@ -1,15 +1,10 @@
-Nuclear Reactor (3x3x3)
-Industrial Fission Power
+Nuclear Reactor 3x3x3
+Compact Steam Nuclear Boiler
 
 <&nuclear_reactor_mb>
 
-The Multiblock Nuclear Reactor converts nuclear fission into Forge Energy (FE), fully compatible with Immersive Engineering HV/MV connectors and fluid pipes.
-
-Structure Layout (3x3x3):
-- Center: 1x Reactor Core Assembly.
-- Front: 1x Nuclear Reactor Controller (opens thermal & fuel GUI).
-- Side Ports: 1x Coolant Input Port and 1x FE Energy Output Port.
-- Shell: 20x Lead-Steel Reactor Casing and 2x Radiation-Shielded Glass.
-
-Thermal Safety:
-Always supply Heavy Borated Coolant via IE Fluid Pipes. If core temperature reaches 1050 C, automatic SCRAM protection shuts down the reaction.
+A 3x3x3 multiblock reactor producing High-Pressure Hot Steam for the Steam Turbine.
+- Top center: 1x Fuel Access Hatch (6x3 IC2-style grid for fuel capsules & plates).
+- Center: 1x Reactor Core Rod.
+- Front: 1x Reactor Controller (telemetry & knife switch).
+- Sides: 1x Coolant Input Port, 1x Water Input Port, 1x Hot Steam Output Port, 19x Reactor Casing.

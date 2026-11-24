@@ -90,9 +90,10 @@ public class NuclearReactorMultiblock implements MultiblockHandler.IMultiblock {
                 return NonNullList.of(
                         ItemStack.EMPTY,
                         new ItemStack(ModBlocks.REACTOR_CASING.get(), 19),
-                        new ItemStack(ModBlocks.REACTOR_GLASS.get(), 2),
+                        new ItemStack(ModBlocks.REACTOR_GLASS.get(), 1),
                         new ItemStack(ModBlocks.REACTOR_CORE_ROD.get(), 1),
                         new ItemStack(ModBlocks.REACTOR_CONTROLLER.get(), 1),
+                        new ItemStack(ModBlocks.FUEL_ACCESS_HATCH.get(), 1),
                         new ItemStack(ModBlocks.COOLANT_INPUT_PORT.get(), 1),
                         new ItemStack(ModBlocks.WATER_INPUT_PORT.get(), 1),
                         new ItemStack(ModBlocks.STEAM_OUTPUT_PORT.get(), 1)
@@ -120,6 +121,7 @@ public class NuclearReactorMultiblock implements MultiblockHandler.IMultiblock {
         Block coolant = ModBlocks.COOLANT_INPUT_PORT.get();
         Block water = ModBlocks.WATER_INPUT_PORT.get();
         Block steam = ModBlocks.STEAM_OUTPUT_PORT.get();
+        Block hatch = ModBlocks.FUEL_ACCESS_HATCH.get();
 
         for (int y = 0; y < 3; y++) {
             for (int z = 0; z < 3; z++) {
@@ -139,7 +141,7 @@ public class NuclearReactorMultiblock implements MultiblockHandler.IMultiblock {
                             state = water.defaultBlockState();
                         }
                     } else if (y == 2 && x == 1 && z == 1) {
-                        state = glass.defaultBlockState();
+                        state = hatch.defaultBlockState();
                     }
                     list.add(new StructureBlockInfo(new BlockPos(x, y, z), state, null));
                 }

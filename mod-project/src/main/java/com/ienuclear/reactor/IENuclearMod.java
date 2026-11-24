@@ -1,5 +1,6 @@
 package com.ienuclear.reactor;
 
+import com.ienuclear.reactor.multiblock.NuclearReactor7x7Multiblock;
 import com.ienuclear.reactor.multiblock.NuclearReactorMultiblock;
 import com.ienuclear.reactor.multiblock.SteamTurbineMultiblock;
 import com.ienuclear.reactor.network.AdjustControlRodPayload;
@@ -44,6 +45,7 @@ public class IENuclearMod {
                         output.accept(ModItems.COOLANT_INPUT_PORT_ITEM.get());
                         output.accept(ModItems.WATER_INPUT_PORT_ITEM.get());
                         output.accept(ModItems.STEAM_OUTPUT_PORT_ITEM.get());
+                        output.accept(ModItems.FUEL_ACCESS_HATCH_ITEM.get());
                         output.accept(ModItems.STEAM_TURBINE_ITEM.get());
                         output.accept(ModItems.TURBINE_CASING_ITEM.get());
                         output.accept(ModItems.TURBINE_ROTOR_ITEM.get());
@@ -56,6 +58,10 @@ public class IENuclearMod {
                         output.accept(ModItems.NUCLEAR_FUEL_ROD.get());
                         output.accept(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get());
                         output.accept(ModItems.MOX_FUEL_CAPSULE.get());
+                        output.accept(ModItems.HEAT_VENT.get());
+                        output.accept(ModItems.REACTOR_PLATING.get());
+                        output.accept(ModItems.HEAT_EXCHANGER.get());
+                        output.accept(ModItems.NEUTRON_REFLECTOR.get());
                         output.accept(ModItems.DEPLETED_FUEL_ROD.get());
                         output.accept(ModItems.PLUTONIUM_DUST.get());
                         output.accept(ModItems.GEIGER_COUNTER.get());
@@ -86,6 +92,7 @@ public class IENuclearMod {
     private void commonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             NuclearReactorMultiblock.register();
+            NuclearReactor7x7Multiblock.register();
             SteamTurbineMultiblock.register();
         });
     }

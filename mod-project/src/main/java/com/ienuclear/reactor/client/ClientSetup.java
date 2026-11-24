@@ -33,6 +33,7 @@ public class ClientSetup {
         event.register(ModMenus.REACTOR_CONTROLLER_MENU.get(), ReactorControllerScreen::new);
         event.register(ModMenus.PRIMITIVE_REACTOR_MENU.get(), PrimitiveReactorScreen::new);
         event.register(ModMenus.STEAM_TURBINE_MENU.get(), SteamTurbineScreen::new);
+        event.register(ModMenus.FUEL_ACCESS_HATCH_MENU.get(), FuelAccessHatchScreen::new);
     }
 
     @SubscribeEvent

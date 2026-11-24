@@ -11,11 +11,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
+/**
+ * Меню терміналу контролера реактора (без слотів палива — паливо завантажується у верхній люк FuelAccessHatch).
+ */
 public class ReactorControllerMenu extends AbstractContainerMenu {
     private final ReactorControllerBlockEntity blockEntity;
     private final Level level;
@@ -24,7 +25,7 @@ public class ReactorControllerMenu extends AbstractContainerMenu {
     public ReactorControllerMenu(int containerId, Inventory playerInv, RegistryFriendlyByteBuf extraData) {
         this(containerId, playerInv,
                 (ReactorControllerBlockEntity) playerInv.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(14));
+                new SimpleContainerData(13));
     }
 
     public ReactorControllerMenu(int containerId, Inventory playerInv,
@@ -33,23 +34,6 @@ public class ReactorControllerMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity;
         this.level = playerInv.player.level();
         this.data = data;
-
-        // Слот 0: Паливна капсула (вхід)
-        this.addSlot(new SlotItemHandler(blockEntity.getInventory(), ReactorControllerBlockEntity.FUEL_SLOT, 64, 24));
-        // Слот 1: Відпрацьована капсула (вихід)
-        this.addSlot(new SlotItemHandler(blockEntity.getInventory(), ReactorControllerBlockEntity.DEPLETED_SLOT, 64, 58) {
-            @Override
-            public boolean mayPlace(ItemStack stack) { return false; }
-        });
-
-        for (int row = 0; row < 3; ++row) {
-            for (int col = 0; col < 9; ++col) {
-                this.addSlot(new Slot(playerInv, col + row * 9 + 9, 8 + col * 18, 94 + row * 18));
-            }
-        }
-        for (int col = 0; col < 9; ++col) {
-            this.addSlot(new Slot(playerInv, col, 8 + col * 18, 152));
-        }
         addDataSlots(data);
     }
 
@@ -64,10 +48,9 @@ public class ReactorControllerMenu extends AbstractContainerMenu {
     public int getSteamPerTick() { return data.get(7); }
     public boolean isActive() { return data.get(8) == 1; }
     public boolean isMultiblockValid() { return data.get(9) == 1; }
-    public int getFuelTicksRemaining() { return data.get(10); }
-    public int getMaxFuelTicks() { return data.get(11); }
-    public int getControlRodInsertion() { return data.get(12); }
-    public int getCoreCount() { return data.get(13); }
+    public int getControlRodInsertion() { return data.get(10); }
+    public int getCoreCount() { return data.get(11); }
+    public int getActiveCapsulesCount() { return data.get(12); }
 
     @Override
     public boolean stillValid(Player player) {
@@ -77,17 +60,6 @@ public class ReactorControllerMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
-        Slot slot = this.slots.get(index);
-        if (!slot.hasItem()) return ItemStack.EMPTY;
-        ItemStack source = slot.getItem();
-        ItemStack copy = source.copy();
-        if (index < 2) {
-            if (!this.moveItemStackTo(source, 2, 38, true)) return ItemStack.EMPTY;
-        } else {
-            if (!this.moveItemStackTo(source, 0, 1, false)) return ItemStack.EMPTY;
-        }
-        if (source.isEmpty()) slot.set(ItemStack.EMPTY);
-        else slot.setChanged();
-        return copy;
+        return ItemStack.EMPTY;
     }
 }

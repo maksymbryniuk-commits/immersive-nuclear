@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LSL",
+    "SLS",
+    "LSL"
+  ],
+  "key": {
+    "L": { "tag": "c:plates/lead" },
+    "S": { "tag": "c:plates/steel" }
+  },
+  "result": {
+    "count": 2,
+    "id": "ienuclear:reactor_plating"
+  }
+}

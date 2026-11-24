@@ -1,0 +1,8 @@
+Nuclear Reactor 7x7x7
+Industrial Mega-Reactor (27+ Cores)
+
+<&nuclear_reactor_7x7_mb>
+
+A massive 7x7x7 steam reactor housing a 3x3x3 core array (27x Reactor Core Rods) and multiple I/O ports to feed multiple Steam Turbines simultaneously.
+- Top lid: 1+ Fuel Access Hatch.
+- Shell: Reactor Casing, Reactor Glass, 2+ Coolant Ports, 2+ Water Ports, 2+ Steam Output Ports, 1x Controller.

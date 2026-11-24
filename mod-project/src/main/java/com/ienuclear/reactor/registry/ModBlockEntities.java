@@ -3,6 +3,7 @@ package com.ienuclear.reactor.registry;
 import com.ienuclear.reactor.IENuclearMod;
 import com.ienuclear.reactor.blockentity.CoolantInputPortBlockEntity;
 import com.ienuclear.reactor.blockentity.EnergyOutputPortBlockEntity;
+import com.ienuclear.reactor.blockentity.FuelAccessHatchBlockEntity;
 import com.ienuclear.reactor.blockentity.PrimitiveReactorBlockEntity;
 import com.ienuclear.reactor.blockentity.ReactorControllerBlockEntity;
 import com.ienuclear.reactor.blockentity.SteamInputPortBlockEntity;
@@ -72,5 +73,12 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(
                             SteamInputPortBlockEntity::new,
                             ModBlocks.STEAM_INPUT_PORT.get()
+                    ).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FuelAccessHatchBlockEntity>> FUEL_ACCESS_HATCH =
+            BLOCK_ENTITIES.register("fuel_access_hatch", () ->
+                    BlockEntityType.Builder.of(
+                            FuelAccessHatchBlockEntity::new,
+                            ModBlocks.FUEL_ACCESS_HATCH.get()
                     ).build(null));
 }
