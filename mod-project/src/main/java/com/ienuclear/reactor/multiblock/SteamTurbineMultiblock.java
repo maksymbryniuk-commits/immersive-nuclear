@@ -72,12 +72,12 @@ public class SteamTurbineMultiblock implements MultiblockHandler.IMultiblock {
             public NonNullList<ItemStack> getTotalMaterials() {
                 return NonNullList.of(
                         ItemStack.EMPTY,
-                        new ItemStack(ModBlocks.TURBINE_CASING.get(), 36),
+                        new ItemStack(ModBlocks.TURBINE_CASING.get(), 32),
                         new ItemStack(ModBlocks.REACTOR_GLASS.get(), 3),
                         new ItemStack(ModBlocks.TURBINE_ROTOR.get(), 3),
                         new ItemStack(ModBlocks.STEAM_TURBINE.get(), 1),
-                        new ItemStack(ModBlocks.STEAM_INPUT_PORT.get(), 1),
-                        new ItemStack(ModBlocks.ENERGY_OUTPUT_PORT.get(), 1)
+                        new ItemStack(ModBlocks.STEAM_INPUT_PORT.get(), 3),
+                        new ItemStack(ModBlocks.ENERGY_OUTPUT_PORT.get(), 3)
                 );
             }
 
@@ -106,9 +106,9 @@ public class SteamTurbineMultiblock implements MultiblockHandler.IMultiblock {
                         state = rotor.defaultBlockState();
                     } else if (y == 1 && x == 1 && z == 4) {
                         state = controller.defaultBlockState().setValue(SteamTurbineBlock.FACING, Direction.SOUTH);
-                    } else if (y == 1 && x == 0 && z == 2) {
+                    } else if (y == 1 && x == 0 && z >= 1 && z <= 3) {
                         state = steamIn.defaultBlockState();
-                    } else if (y == 1 && x == 2 && z == 2) {
+                    } else if (y == 1 && x == 2 && z >= 1 && z <= 3) {
                         state = energyOut.defaultBlockState();
                     } else if (y == 2 && x == 1 && z >= 1 && z <= 3) {
                         state = glass.defaultBlockState();

@@ -21,7 +21,7 @@ public class SteamTurbineMenu extends AbstractContainerMenu {
     public SteamTurbineMenu(int containerId, Inventory playerInv, RegistryFriendlyByteBuf extraData) {
         this(containerId, playerInv,
                 (SteamTurbineBlockEntity) playerInv.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(11));
+                new SimpleContainerData(13));
     }
 
     public SteamTurbineMenu(int containerId, Inventory playerInv,
@@ -42,6 +42,8 @@ public class SteamTurbineMenu extends AbstractContainerMenu {
     public int getEnergyCapacity() { return Math.max(1, (data.get(7) & 0xFFFF) | ((data.get(8) & 0xFFFF) << 16)); }
     public boolean isMultiblockValid() { return data.get(9) == 1; }
     public int getStatusCode() { return data.get(10); }
+    public int getActiveInputs() { return data.get(11); }
+    public int getOutputsCount() { return data.get(12); }
 
     @Override
     public boolean stillValid(Player player) {

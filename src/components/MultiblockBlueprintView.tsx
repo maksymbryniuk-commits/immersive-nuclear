@@ -148,9 +148,9 @@ const STRUCTURE_TURBINE: (BlockKey | null)[][][] = [
   Array.from({ length: 5 }, () => ['turbineCasing', 'turbineCasing', 'turbineCasing']),
   [
     ['turbineCasing', 'turbineCasing', 'turbineCasing'],
-    ['turbineCasing', 'turbineRotor', 'turbineCasing'],
     ['steamIn', 'turbineRotor', 'energyOut'],
-    ['turbineCasing', 'turbineRotor', 'turbineCasing'],
+    ['steamIn', 'turbineRotor', 'energyOut'],
+    ['steamIn', 'turbineRotor', 'energyOut'],
     ['turbineCasing', 'turbineCtrl', 'turbineCasing'],
   ],
   [
@@ -489,10 +489,9 @@ export function MultiblockBlueprintView() {
               Мультиблокова Парова турбіна 3×3×5 (3600 RPM · до 36 000 FE/t)
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              3 в ширину × 3 у висоту × 5 у довжину. У центрі вздовж осі встановлюються 3×{' '}
-              <strong className="text-slate-100">Ротори турбіни</strong>. Приймає гарячу пару через{' '}
-              <strong className="text-cyan-300">Порт входу пари</strong> та видає FE через{' '}
-              <strong className="text-amber-300">Порт виходу енергії</strong>.
+              3 в ширину × 3 у висоту × 5 у довжину. Має <strong>3× Порти входу пари</strong> з одного боку та{' '}
+              <strong>3× Порти виходу FE</strong> з іншого: з кожним підключеним входом пари швидкість зростає
+              (1 вхід → 1200 RPM, 2 входи → 2400 RPM, 3 входи → повні 3600 RPM)!
             </p>
             <IsometricViewer structure={STRUCTURE_TURBINE} title="Структура турбіни 3×3×5" />
           </div>

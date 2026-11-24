@@ -41,7 +41,7 @@
   "gui.ienuclear.stop": "СТОП",
   "gui.ienuclear.meltdown_warning": "КРИТИЧНИЙ ПЕРЕГРІВ! ЗАГРОЗА РОЗПЛАВЛЕННЯ!",
   "message.ienuclear.multiblock_incomplete": "Мультиблок не зібрано! Потрібні: корпус, 1+ активна зона, люк палива ЗВЕРХУ, порт охолоджувача, порт води та порт пари.",
-  "message.ienuclear.turbine_incomplete": "Парову турбіну 3x3x5 не зібрано! Потрібно: 3 ротори по центру, корпус турбіни, порт входу пари та порт виходу FE.",
+  "message.ienuclear.turbine_incomplete": "Парову турбіну 3x3x5 не зібрано! Потрібно: 3 ротори по центру, 3× Порт входу пари, 3× Порт виходу FE та корпус турбіни.",
   "message.ienuclear.meltdown": "КАТАСТРОФІЧНИЙ ВИБУХ: Активна зона реактора розплавилась через відсутність охолоджувача!",
   "ie.manual.category.ienuclear.nuclear_category.name": "Immersive Nuclear",
   "ie.manual.entry.ienuclear.nuclear_reactor.name": "Ядерний реактор 3×3×3",

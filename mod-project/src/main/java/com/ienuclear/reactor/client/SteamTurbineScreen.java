@@ -101,10 +101,11 @@ public class SteamTurbineScreen extends AbstractContainerScreen<SteamTurbineMenu
         };
 
         gui.drawString(this.font, "C:\\TURBINE>", 56, 22, 0xFF1F8A44, false);
-        gui.drawString(this.font, "SYS: " + statusText, 56, 35, statusCol, false);
-        gui.drawString(this.font, "RPM: " + menu.getRpm(), 56, 50, 0xFF22EEFF, false);
-        gui.drawString(this.font, "OUT: +" + menu.getFePerTick() + " FE/t", 56, 65, 0xFFFFB000, false);
-        gui.drawString(this.font, "STM: -" + menu.getSteamPerTick() + " mB/t", 56, 80, 0xFFBBF7D0, false);
+        gui.drawString(this.font, "SYS: " + statusText, 56, 33, statusCol, false);
+        gui.drawString(this.font, "RPM: " + menu.getRpm() + " (" + menu.getActiveInputs() + "/3)", 56, 46, 0xFF22EEFF, false);
+        gui.drawString(this.font, "OUT: +" + menu.getFePerTick() + " FE/t", 56, 59, 0xFFFFB000, false);
+        gui.drawString(this.font, "STM: -" + menu.getSteamPerTick() + " mB/t", 56, 72, 0xFFBBF7D0, false);
+        gui.drawString(this.font, "PORTS IN:" + menu.getActiveInputs() + "/3 FE:" + menu.getOutputsCount(), 56, 84, 0xFF86EFAC, false);
 
         gui.drawString(this.font, "RPM", 13, 96, 0xFF33FF66, false);
         gui.drawString(this.font, "STM", 33, 96, 0xFF86EFAC, false);

@@ -24,19 +24,20 @@ import java.util.List;
 
 /**
  * Контролер мультиблокової Парової турбіни 3×3×5 (ширина 3, висота 3, довжина 5):
- * - Передня грань (центр): Контролер парової турбіни (Steam Turbine)
- * - Внутрішня вісь (3 блоки вглиб): 3× Ротор парової турбіни (Turbine Rotor)
- * - Зовнішня оболонка (41 блок): Корпус турбіни (Turbine Casing), Радіаційне скло (Reactor Glass),
- *   щонайменше 1× Порт входу пари (Steam Input Port) та 1× Порт виходу енергії FE (Energy Output Port).
+ * - 3× Порти входу гарячої пари (Steam Input Port)
+ * - 3× Порти виходу енергії FE (Energy Output Port)
+ * - Кожен підключений і активний вхід пари додає +1200 RPM до максимальної швидкості (1200 -> 2400 -> 3600 RPM)!
  */
 public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider {
     public static final int MAX_RPM = 3600;
-    public static final int MAX_STEAM_PER_TICK = 1200;
+    public static final int RPM_PER_INPUT = 1200;
+    public static final int STEAM_PER_INPUT_PER_TICK = 400;
 
     private boolean multiblockValid = false;
     private int rpm = 0;
     private int lastFePerTick = 0;
     private int lastSteamUsed = 0;
+    private int activeInputsCount = 0;
 
     private final List<BlockPos> cachedSteamInputs = new ArrayList<>();
     private final List<BlockPos> cachedEnergyOutputs = new ArrayList<>();
@@ -56,6 +57,8 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
                 case 8 -> (getEnergyCapacity() >> 16) & 0xFFFF;
                 case 9 -> multiblockValid ? 1 : 0;
                 case 10 -> getStatusCode();
+                case 11 -> activeInputsCount;
+                case 12 -> cachedEnergyOutputs.size();
                 default -> 0;
             };
         }
@@ -64,7 +67,7 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
         public void set(int index, int value) {}
 
         @Override
-        public int getCount() { return 11; }
+        public int getCount() { return 13; }
     };
 
     public SteamTurbineBlockEntity(BlockPos pos, BlockState state) {
@@ -75,13 +78,14 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
 
     private int getStatusCode() {
         if (!multiblockValid) return 0; // NO MULTIBLOCK
-        if (rpm >= 2400 && lastSteamUsed > 0) return 3; // OPTIMAL ONLINE
-        if (lastSteamUsed > 0 || rpm > 100) return 2; // SPINNING UP / COASTING
+        if (rpm >= 2400 && lastSteamUsed > 0) return 3; // HIGH SPEED ONLINE
+        if (lastSteamUsed > 0 || rpm > 100) return 2; // SPINNING UP / PARTIAL
         return 1; // IDLE
     }
 
     /**
-     * Перевіряє мультиблок 3 (ширина) × 3 (висота) × 5 (довжина) позаду контролера.
+     * Перевіряє мультиблок 3 (ширина) × 3 (висота) × 5 (довжина):
+     * вимагає 3× Ротори всередині, щонайменше 3× Порти входу пари та 3× Порти виходу FE.
      */
     public boolean validateMultiblock() {
         if (level == null) return false;
@@ -105,7 +109,7 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
                             return false;
                         }
                     } else {
-                        if (dx == 0 && dy == 0 && dz == 0) continue; // сам контролер
+                        if (dx == 0 && dy == 0 && dz == 0) continue;
                         if (bs.is(ModBlocks.STEAM_INPUT_PORT.get())) {
                             foundSteam.add(p);
                         } else if (bs.is(ModBlocks.ENERGY_OUTPUT_PORT.get())) {
@@ -120,7 +124,7 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
             }
         }
 
-        if (foundSteam.isEmpty() || foundEnergy.isEmpty()) {
+        if (foundSteam.size() < 3 || foundEnergy.size() < 3) {
             multiblockValid = false;
             return false;
         }
@@ -140,22 +144,38 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
 
         boolean spinning = false;
         if (turbine.multiblockValid) {
-            int drained = turbine.drainSteam(MAX_STEAM_PER_TICK);
-            turbine.lastSteamUsed = drained;
+            int activeInputs = 0;
+            int totalDrained = 0;
 
-            if (drained > 0) {
+            for (BlockPos p : turbine.cachedSteamInputs) {
+                if (level.getBlockEntity(p) instanceof SteamInputPortBlockEntity port) {
+                    int drained = port.drainSteam(STEAM_PER_INPUT_PER_TICK);
+                    if (drained > 0) {
+                        activeInputs++;
+                        totalDrained += drained;
+                    }
+                }
+            }
+
+            turbine.activeInputsCount = Math.min(3, activeInputs);
+            turbine.lastSteamUsed = totalDrained;
+
+            if (totalDrained > 0 && activeInputs > 0) {
                 spinning = true;
-                int targetRpm = Math.min(MAX_RPM, Math.max(800, drained * 4));
+                // З кожним підключеним входом максимальна швидкість зростає: 1 -> 1200, 2 -> 2400, 3 -> 3600 RPM
+                int capRpm = Math.min(MAX_RPM, turbine.activeInputsCount * RPM_PER_INPUT);
+                int targetRpm = Math.min(capRpm, Math.max(400, totalDrained * 3));
+                int accel = 15 * turbine.activeInputsCount;
+
                 if (turbine.rpm < targetRpm) {
-                    turbine.rpm = Math.min(targetRpm, turbine.rpm + 40);
+                    turbine.rpm = Math.min(targetRpm, turbine.rpm + accel);
                 } else {
                     turbine.rpm = Math.max(targetRpm, turbine.rpm - 20);
                 }
 
-                // Ефективність до 30 FE за 1 mB гарячої пари на максимальних обертах (до 36 000 FE/t)
                 double rpmFactor = 0.35 + 0.65 * ((double) turbine.rpm / MAX_RPM);
-                int feGenerated = (int) Math.round(drained * 30.0 * rpmFactor);
-                turbine.insertEnergy(feGenerated);
+                int feGenerated = (int) Math.round(totalDrained * 30.0 * rpmFactor);
+                turbine.insertEnergyEvenly(feGenerated);
                 turbine.lastFePerTick = feGenerated;
             } else {
                 turbine.lastFePerTick = 0;
@@ -164,6 +184,7 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
                 }
             }
         } else {
+            turbine.activeInputsCount = 0;
             turbine.lastSteamUsed = 0;
             turbine.lastFePerTick = 0;
             if (turbine.rpm > 0) {
@@ -192,18 +213,6 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
         return Math.max(1, cachedSteamInputs.size() * SteamInputPortBlockEntity.CAPACITY);
     }
 
-    private int drainSteam(int amount) {
-        if (level == null) return 0;
-        int remaining = amount;
-        for (BlockPos p : cachedSteamInputs) {
-            if (remaining <= 0) break;
-            if (level.getBlockEntity(p) instanceof SteamInputPortBlockEntity port) {
-                remaining -= port.drainSteam(remaining);
-            }
-        }
-        return amount - remaining;
-    }
-
     private int getEnergyStored() {
         if (level == null) return 0;
         int sum = 0;
@@ -217,9 +226,18 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
         return Math.max(1, cachedEnergyOutputs.size() * EnergyOutputPortBlockEntity.CAPACITY);
     }
 
-    private void insertEnergy(int amount) {
-        if (level == null || amount <= 0) return;
+    private void insertEnergyEvenly(int amount) {
+        if (level == null || amount <= 0 || cachedEnergyOutputs.isEmpty()) return;
+        int perPort = Math.max(1, amount / cachedEnergyOutputs.size());
         int remaining = amount;
+        for (BlockPos p : cachedEnergyOutputs) {
+            if (remaining <= 0) break;
+            if (level.getBlockEntity(p) instanceof EnergyOutputPortBlockEntity port) {
+                int toGive = Math.min(remaining, perPort + 1);
+                remaining -= port.insertGeneratedEnergy(toGive);
+            }
+        }
+        // Доливання залишку у будь-який вільний порт
         for (BlockPos p : cachedEnergyOutputs) {
             if (remaining <= 0) break;
             if (level.getBlockEntity(p) instanceof EnergyOutputPortBlockEntity port) {

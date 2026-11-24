@@ -41,7 +41,7 @@
   "gui.ienuclear.stop": "STOP",
   "gui.ienuclear.meltdown_warning": "CRITICAL OVERHEAT! MELTDOWN IMMINENT!",
   "message.ienuclear.multiblock_incomplete": "Multiblock incomplete! Requires casing, 1+ core rod, TOP Fuel Access Hatch, coolant port, water port, and steam output port.",
-  "message.ienuclear.turbine_incomplete": "3x3x5 Steam Turbine incomplete! Requires 3 rotors inside, turbine casing, steam input port, and FE output port.",
+  "message.ienuclear.turbine_incomplete": "3x3x5 Steam Turbine incomplete! Requires 3 rotors inside, 3x Steam Input Ports, 3x FE Output Ports, and turbine casing.",
   "message.ienuclear.meltdown": "CATASTROPHIC MELTDOWN: Core breached due to lack of coolant!",
   "ie.manual.category.ienuclear.nuclear_category.name": "Immersive Nuclear",
   "ie.manual.entry.ienuclear.nuclear_reactor.name": "Nuclear Reactor 3x3x3",
