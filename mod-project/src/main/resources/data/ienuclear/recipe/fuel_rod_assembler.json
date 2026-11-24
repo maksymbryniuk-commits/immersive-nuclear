@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "GCG",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "G": {
+      "item": "minecraft:crafting_table"
+    },
+    "C": {
+      "item": "ienuclear:reactor_casing"
+    }
+  },
+  "result": {
+    "id": "ienuclear:fuel_rod_assembler",
+    "count": 1
+  }
+}

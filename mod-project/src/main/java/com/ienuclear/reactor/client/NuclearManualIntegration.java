@@ -59,5 +59,11 @@ public class NuclearManualIntegration {
         ManualEntry.ManualEntryBuilder enrichmentEntry = new ManualEntry.ManualEntryBuilder(manual);
         enrichmentEntry.readFromFile(ResourceLocation.fromNamespaceAndPath(IENuclearMod.MODID, "uranium_enrichment"));
         manual.addEntry(nuclearCategory, enrichmentEntry.create());
+
+        for (String page : new String[]{"gas_centrifuge", "heat_exchanger", "cooling_tower"}) {
+            ManualEntry.ManualEntryBuilder b = new ManualEntry.ManualEntryBuilder(manual);
+            b.readFromFile(ResourceLocation.fromNamespaceAndPath(IENuclearMod.MODID, page));
+            manual.addEntry(nuclearCategory, b.create());
+        }
     }
 }

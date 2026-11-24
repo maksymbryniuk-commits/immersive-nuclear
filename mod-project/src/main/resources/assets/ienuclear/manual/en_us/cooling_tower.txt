@@ -1,0 +1,3 @@
+Cooling Tower
+Closed Water Loop
+A 7x7x10 concrete tower that condenses Exhaust Steam back into Distilled Water for closed-loop reactor operation.

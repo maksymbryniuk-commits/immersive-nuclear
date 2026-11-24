@@ -49,6 +49,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
     private int currentSteamPerTick = 0;
     private int controlRodInsertion = 0;
     private int coreCount = 0;
+    private int coolingLoopCount = 0;
     private int activeCapsulesCount = 0;
 
     private final List<BlockPos> cachedCoolantPorts = new ArrayList<>();
@@ -97,6 +98,26 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
     public int getControlRodInsertion() { return controlRodInsertion; }
     public int getCurrentSteamPerTick() { return currentSteamPerTick; }
     public int getCoreCount() { return coreCount; }
+    public void setControlRodInsertion(int val) { this.controlRodInsertion = Math.max(0, Math.min(100, val)); setChanged(); }
+    public int getActiveCapsulesCount() { return activeCapsulesCount; }
+    public boolean isActive() { return active; }
+    public boolean isMultiblockValid() { return multiblockValid; }
+
+    public boolean triggerEccsFlood() {
+        if (level == null) return false;
+        for (Direction dir : Direction.values()) {
+            BlockPos adj = worldPosition.relative(dir);
+            if (level.getBlockEntity(adj) instanceof EccsUnitBlockEntity eccs && eccs.consumeEmergencyCoolant()) {
+                this.temperature = Math.max(AMBIENT_TEMP, this.temperature - 450);
+                this.active = false;
+                this.controlRodInsertion = 100;
+                updateBlockState();
+                setChanged();
+                return true;
+            }
+        }
+        return false;
+    }
 
     public double getRadiationLevel() {
         if (!active && temperature < 300) return 0.1;
@@ -160,6 +181,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                 || bs.is(ModBlocks.WATER_INPUT_PORT.get())
                 || bs.is(ModBlocks.STEAM_OUTPUT_PORT.get())
                 || bs.is(ModBlocks.FUEL_ACCESS_HATCH.get())
+                || bs.is(ModBlocks.REMOTE_CONTROL_PORT.get())
                 || bs.is(ModBlocks.REACTOR_CONTROLLER.get());
     }
 
@@ -207,6 +229,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         List<BlockPos> foundSteam = new ArrayList<>();
         List<BlockPos> foundHatches = new ArrayList<>();
         int foundCores = 0;
+        int foundCoolingLoops = 0;
 
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
@@ -226,6 +249,10 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                             foundWater.add(p);
                         } else if (bs.is(ModBlocks.STEAM_OUTPUT_PORT.get())) {
                             foundSteam.add(p);
+                        } else if (bs.is(ModBlocks.REMOTE_CONTROL_PORT.get())) {
+                            if (level.getBlockEntity(p) instanceof RemoteControlPortBlockEntity port) {
+                                port.setControllerPos(worldPosition);
+                            }
                         } else if (bs.is(ModBlocks.FUEL_ACCESS_HATCH.get())) {
                             if (y != maxY) {
                                 // Люк палива має стояти зверху реактора!
@@ -240,6 +267,8 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                     } else {
                         if (bs.is(ModBlocks.REACTOR_CORE_ROD.get())) {
                             foundCores++;
+                        } else if (bs.is(ModBlocks.COOLING_LOOP.get())) {
+                            foundCoolingLoops++;
                         } else if (!bs.isAir()) {
                             multiblockValid = false;
                             return false;
@@ -263,6 +292,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         this.cachedFuelHatches.clear();
         this.cachedFuelHatches.addAll(foundHatches);
         this.coreCount = foundCores;
+        this.coolingLoopCount = foundCoolingLoops;
         this.cachedCenterPos = new BlockPos((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2);
         this.multiblockValid = true;
         return true;
@@ -299,6 +329,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                     totalNetHeat += res.netHeatDelta();
                 }
             }
+            totalNetHeat -= reactor.coolingLoopCount * 2;
             reactor.activeCapsulesCount = totalCapsules;
 
             if (totalCapsules > 0) {
@@ -337,6 +368,10 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
 
                 if (reactor.temperature >= WARNING_TEMP && level instanceof ServerLevel serverLevel) {
                     reactor.emitOverheatEffects(serverLevel, center, gameTime);
+                }
+
+                if (reactor.temperature >= 1100) {
+                    reactor.triggerEccsFlood();
                 }
 
                 if (reactor.temperature >= MELTDOWN_TEMP) {

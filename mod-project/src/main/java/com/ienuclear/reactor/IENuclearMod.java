@@ -5,6 +5,7 @@ import com.ienuclear.reactor.multiblock.NuclearReactorMultiblock;
 import com.ienuclear.reactor.multiblock.SteamTurbineMultiblock;
 import com.ienuclear.reactor.network.AdjustControlRodPayload;
 import com.ienuclear.reactor.network.ToggleReactorPayload;
+import com.ienuclear.reactor.registry.ModArmorMaterials;
 import com.ienuclear.reactor.registry.ModBlockEntities;
 import com.ienuclear.reactor.registry.ModBlocks;
 import com.ienuclear.reactor.registry.ModFluids;
@@ -71,6 +72,33 @@ public class IENuclearMod {
                         output.accept(ModItems.URANIUM_HEXAFLUORIDE_BUCKET.get());
                         output.accept(ModItems.ENRICHED_URANIUM_BUCKET.get());
                         output.accept(ModItems.HOT_STEAM_BUCKET.get());
+                        // v3.0
+                        output.accept(ModItems.COOLING_LOOP_ITEM.get());
+                        output.accept(ModItems.REMOTE_CONTROL_PORT_ITEM.get());
+                        output.accept(ModItems.CONTROL_CABLE_ITEM.get());
+                        output.accept(ModItems.CONTROL_DESK_ITEM.get());
+                        output.accept(ModItems.GAS_CENTRIFUGE_ITEM.get());
+                        output.accept(ModItems.FUEL_ROD_ASSEMBLER_ITEM.get());
+                        output.accept(ModItems.SPENT_FUEL_POOL_ITEM.get());
+                        output.accept(ModItems.COOLING_TOWER_ITEM.get());
+                        output.accept(ModItems.HEAT_EXCHANGER_CONTROLLER_ITEM.get());
+                        output.accept(ModItems.ECCS_UNIT_ITEM.get());
+                        output.accept(ModItems.NUCLEAR_WASTE_CASK_ITEM.get());
+                        output.accept(ModItems.RTG_GENERATOR_ITEM.get());
+                        output.accept(ModItems.DEPLETED_URANIUM_BLOCK_ITEM.get());
+                        output.accept(ModItems.THORIUM_FUEL_CAPSULE.get());
+                        output.accept(ModItems.DEPLETED_URANIUM_INGOT.get());
+                        output.accept(ModItems.TRITIUM_CELL.get());
+                        output.accept(ModItems.AP_URANIUM_SLUG.get());
+                        output.accept(ModItems.HAZMAT_HELMET.get());
+                        output.accept(ModItems.HAZMAT_CHESTPLATE.get());
+                        output.accept(ModItems.HAZMAT_LEGGINGS.get());
+                        output.accept(ModItems.HAZMAT_BOOTS.get());
+                        output.accept(ModItems.DEPLETED_UF6_BUCKET.get());
+                        output.accept(ModItems.LIQUID_SODIUM_BUCKET.get());
+                        output.accept(ModItems.HOT_COOLANT_BUCKET.get());
+                        output.accept(ModItems.DISTILLED_WATER_BUCKET.get());
+                        output.accept(ModItems.EXHAUST_STEAM_BUCKET.get());
                     })
                     .build()
     );
@@ -82,6 +110,7 @@ public class IENuclearMod {
         ModFluids.FLUIDS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
+        ModArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
@@ -144,6 +173,16 @@ public class IENuclearMod {
                 ModBlockEntities.PRIMITIVE_REACTOR.get(),
                 (blockEntity, side) -> (side == Direction.UP || side == null) ? blockEntity.getEnergyStorage() : null
         );
+
+        // v3.0 Capabilities
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.GAS_CENTRIFUGE.get(), (be, s) -> be.getEnergyStorage());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.GAS_CENTRIFUGE.get(), (be, s) -> be.getFluidHandler());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.FUEL_ROD_ASSEMBLER.get(), (be, s) -> be.getEnergyStorage());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.SPENT_FUEL_POOL.get(), (be, s) -> be.getWaterTank());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.COOLING_TOWER.get(), (be, s) -> be.getFluidHandler());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.HEAT_EXCHANGER_CONTROLLER.get(), (be, s) -> be.getFluidHandler());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.ECCS_UNIT.get(), (be, s) -> be.getTank());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.RTG_GENERATOR.get(), (be, s) -> be.getEnergyStorage());
     }
 
     private void registerPayloads(RegisterPayloadHandlersEvent event) {

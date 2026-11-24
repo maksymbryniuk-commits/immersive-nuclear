@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PCP",
+    "IWI",
+    "PCP"
+  ],
+  "key": {
+    "P": {
+      "item": "immersiveengineering:fluid_pipe"
+    },
+    "C": {
+      "item": "minecraft:copper_block"
+    },
+    "I": {
+      "item": "ienuclear:reactor_casing"
+    },
+    "W": {
+      "item": "minecraft:water_bucket"
+    }
+  },
+  "result": {
+    "id": "ienuclear:heat_exchanger_controller",
+    "count": 1
+  }
+}

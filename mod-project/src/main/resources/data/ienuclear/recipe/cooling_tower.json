@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SCS",
+    "CWC",
+    "SCS"
+  ],
+  "key": {
+    "S": {
+      "item": "immersiveengineering:concrete"
+    },
+    "C": {
+      "item": "ienuclear:cooling_loop"
+    },
+    "W": {
+      "item": "minecraft:water_bucket"
+    }
+  },
+  "result": {
+    "id": "ienuclear:cooling_tower",
+    "count": 1
+  }
+}

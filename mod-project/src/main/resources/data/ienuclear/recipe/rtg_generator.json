@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ICI",
+    "PTP",
+    "ICI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "C": {
+      "item": "minecraft:copper_block"
+    },
+    "P": {
+      "item": "ienuclear:reactor_plating"
+    },
+    "T": {
+      "item": "ienuclear:tritium_cell"
+    }
+  },
+  "result": {
+    "id": "ienuclear:rtg_generator",
+    "count": 1
+  }
+}

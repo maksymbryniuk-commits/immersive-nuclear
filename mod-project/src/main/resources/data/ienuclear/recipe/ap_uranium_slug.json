@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    " D ",
+    " C "
+  ],
+  "key": {
+    "D": {
+      "item": "ienuclear:depleted_uranium_ingot"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "result": {
+    "id": "ienuclear:ap_uranium_slug",
+    "count": 4
+  }
+}

@@ -1,12 +1,23 @@
 package com.ienuclear.reactor.registry;
 
 import com.ienuclear.reactor.IENuclearMod;
+import com.ienuclear.reactor.block.ControlCableBlock;
+import com.ienuclear.reactor.block.ControlDeskBlock;
 import com.ienuclear.reactor.block.CoolantInputPortBlock;
+import com.ienuclear.reactor.block.CoolingTowerBlock;
+import com.ienuclear.reactor.block.EccsUnitBlock;
 import com.ienuclear.reactor.block.EnergyOutputPortBlock;
 import com.ienuclear.reactor.block.FuelAccessHatchBlock;
+import com.ienuclear.reactor.block.FuelRodAssemblerBlock;
+import com.ienuclear.reactor.block.GasCentrifugeBlock;
+import com.ienuclear.reactor.block.HeatExchangerBlock;
 import com.ienuclear.reactor.block.MoltenCoriumBlock;
+import com.ienuclear.reactor.block.NuclearWasteCaskBlock;
 import com.ienuclear.reactor.block.PrimitiveReactorBlock;
 import com.ienuclear.reactor.block.ReactorControllerBlock;
+import com.ienuclear.reactor.block.RemoteControlPortBlock;
+import com.ienuclear.reactor.block.RtgGeneratorBlock;
+import com.ienuclear.reactor.block.SpentFuelPoolBlock;
 import com.ienuclear.reactor.block.SteamInputPortBlock;
 import com.ienuclear.reactor.block.SteamOutputPortBlock;
 import com.ienuclear.reactor.block.SteamTurbineBlock;
@@ -187,5 +198,81 @@ public class ModBlocks {
                     .strength(5.5f, 25.0f)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL))
+    );
+
+    // v3.0: Нові рідини
+    public static final DeferredBlock<LiquidBlock> DEPLETED_UF6_BLOCK = BLOCKS.register(
+            "depleted_uf6_block",
+            () -> new LiquidBlock(ModFluids.DEPLETED_UF6_SOURCE.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).noLootTable())
+    );
+    public static final DeferredBlock<LiquidBlock> LIQUID_SODIUM_BLOCK = BLOCKS.register(
+            "liquid_sodium_block",
+            () -> new LiquidBlock(ModFluids.LIQUID_SODIUM_SOURCE.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.LAVA).noLootTable())
+    );
+    public static final DeferredBlock<LiquidBlock> HOT_COOLANT_BLOCK = BLOCKS.register(
+            "hot_coolant_block",
+            () -> new LiquidBlock(ModFluids.HOT_COOLANT_SOURCE.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).noLootTable())
+    );
+    public static final DeferredBlock<LiquidBlock> DISTILLED_WATER_BLOCK = BLOCKS.register(
+            "distilled_water_block",
+            () -> new LiquidBlock(ModFluids.DISTILLED_WATER_SOURCE.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).noLootTable())
+    );
+    public static final DeferredBlock<LiquidBlock> EXHAUST_STEAM_BLOCK = BLOCKS.register(
+            "exhaust_steam_block",
+            () -> new LiquidBlock(ModFluids.EXHAUST_STEAM_SOURCE.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).noLootTable())
+    );
+
+    // v3.0: Охолоджувальний контур, дистанційне керування, паливний цикл, термодинаміка, безпека
+    public static final DeferredBlock<Block> COOLING_LOOP = BLOCKS.register(
+            "cooling_loop",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(4.5f, 15.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+    );
+    public static final DeferredBlock<RemoteControlPortBlock> REMOTE_CONTROL_PORT = BLOCKS.register(
+            "remote_control_port",
+            () -> new RemoteControlPortBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5.5f, 25.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+    );
+    public static final DeferredBlock<ControlCableBlock> CONTROL_CABLE = BLOCKS.register(
+            "control_cable",
+            () -> new ControlCableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.5f, 5.0f).sound(SoundType.METAL).noOcclusion())
+    );
+    public static final DeferredBlock<ControlDeskBlock> CONTROL_DESK = BLOCKS.register(
+            "control_desk",
+            () -> new ControlDeskBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(4.0f, 12.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+    );
+    public static final DeferredBlock<GasCentrifugeBlock> GAS_CENTRIFUGE = BLOCKS.register(
+            "gas_centrifuge",
+            () -> new GasCentrifugeBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5.5f, 20.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+    );
+    public static final DeferredBlock<FuelRodAssemblerBlock> FUEL_ROD_ASSEMBLER = BLOCKS.register(
+            "fuel_rod_assembler",
+            () -> new FuelRodAssemblerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(4.5f, 15.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+    );
+    public static final DeferredBlock<SpentFuelPoolBlock> SPENT_FUEL_POOL = BLOCKS.register(
+            "spent_fuel_pool",
+            () -> new SpentFuelPoolBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(5.0f, 20.0f).requiresCorrectToolForDrops().sound(SoundType.STONE))
+    );
+    public static final DeferredBlock<CoolingTowerBlock> COOLING_TOWER = BLOCKS.register(
+            "cooling_tower",
+            () -> new CoolingTowerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(5.5f, 25.0f).requiresCorrectToolForDrops().sound(SoundType.STONE))
+    );
+    public static final DeferredBlock<HeatExchangerBlock> HEAT_EXCHANGER_CONTROLLER = BLOCKS.register(
+            "heat_exchanger_controller",
+            () -> new HeatExchangerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5.5f, 25.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+    );
+    public static final DeferredBlock<EccsUnitBlock> ECCS_UNIT = BLOCKS.register(
+            "eccs_unit",
+            () -> new EccsUnitBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(5.0f, 20.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+    );
+    public static final DeferredBlock<NuclearWasteCaskBlock> NUCLEAR_WASTE_CASK = BLOCKS.register(
+            "nuclear_waste_cask",
+            () -> new NuclearWasteCaskBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(8.0f, 60.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+    );
+    public static final DeferredBlock<RtgGeneratorBlock> RTG_GENERATOR = BLOCKS.register(
+            "rtg_generator",
+            () -> new RtgGeneratorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(5.0f, 20.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+    );
+    public static final DeferredBlock<Block> DEPLETED_URANIUM_BLOCK = BLOCKS.register(
+            "depleted_uranium_block",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(10.0f, 80.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
     );
 }

@@ -1,11 +1,21 @@
 package com.ienuclear.reactor.registry;
 
 import com.ienuclear.reactor.IENuclearMod;
+import com.ienuclear.reactor.blockentity.ControlDeskBlockEntity;
 import com.ienuclear.reactor.blockentity.CoolantInputPortBlockEntity;
+import com.ienuclear.reactor.blockentity.CoolingTowerBlockEntity;
+import com.ienuclear.reactor.blockentity.EccsUnitBlockEntity;
 import com.ienuclear.reactor.blockentity.EnergyOutputPortBlockEntity;
 import com.ienuclear.reactor.blockentity.FuelAccessHatchBlockEntity;
+import com.ienuclear.reactor.blockentity.FuelRodAssemblerBlockEntity;
+import com.ienuclear.reactor.blockentity.GasCentrifugeBlockEntity;
+import com.ienuclear.reactor.blockentity.HeatExchangerBlockEntity;
+import com.ienuclear.reactor.blockentity.NuclearWasteCaskBlockEntity;
 import com.ienuclear.reactor.blockentity.PrimitiveReactorBlockEntity;
 import com.ienuclear.reactor.blockentity.ReactorControllerBlockEntity;
+import com.ienuclear.reactor.blockentity.RemoteControlPortBlockEntity;
+import com.ienuclear.reactor.blockentity.RtgGeneratorBlockEntity;
+import com.ienuclear.reactor.blockentity.SpentFuelPoolBlockEntity;
 import com.ienuclear.reactor.blockentity.SteamInputPortBlockEntity;
 import com.ienuclear.reactor.blockentity.SteamOutputPortBlockEntity;
 import com.ienuclear.reactor.blockentity.SteamTurbineBlockEntity;
@@ -81,4 +91,44 @@ public class ModBlockEntities {
                             FuelAccessHatchBlockEntity::new,
                             ModBlocks.FUEL_ACCESS_HATCH.get()
                     ).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RemoteControlPortBlockEntity>> REMOTE_CONTROL_PORT =
+            BLOCK_ENTITIES.register("remote_control_port", () ->
+                    BlockEntityType.Builder.of(RemoteControlPortBlockEntity::new, ModBlocks.REMOTE_CONTROL_PORT.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ControlDeskBlockEntity>> CONTROL_DESK =
+            BLOCK_ENTITIES.register("control_desk", () ->
+                    BlockEntityType.Builder.of(ControlDeskBlockEntity::new, ModBlocks.CONTROL_DESK.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GasCentrifugeBlockEntity>> GAS_CENTRIFUGE =
+            BLOCK_ENTITIES.register("gas_centrifuge", () ->
+                    BlockEntityType.Builder.of(GasCentrifugeBlockEntity::new, ModBlocks.GAS_CENTRIFUGE.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FuelRodAssemblerBlockEntity>> FUEL_ROD_ASSEMBLER =
+            BLOCK_ENTITIES.register("fuel_rod_assembler", () ->
+                    BlockEntityType.Builder.of(FuelRodAssemblerBlockEntity::new, ModBlocks.FUEL_ROD_ASSEMBLER.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SpentFuelPoolBlockEntity>> SPENT_FUEL_POOL =
+            BLOCK_ENTITIES.register("spent_fuel_pool", () ->
+                    BlockEntityType.Builder.of(SpentFuelPoolBlockEntity::new, ModBlocks.SPENT_FUEL_POOL.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CoolingTowerBlockEntity>> COOLING_TOWER =
+            BLOCK_ENTITIES.register("cooling_tower", () ->
+                    BlockEntityType.Builder.of(CoolingTowerBlockEntity::new, ModBlocks.COOLING_TOWER.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HeatExchangerBlockEntity>> HEAT_EXCHANGER_CONTROLLER =
+            BLOCK_ENTITIES.register("heat_exchanger_controller", () ->
+                    BlockEntityType.Builder.of(HeatExchangerBlockEntity::new, ModBlocks.HEAT_EXCHANGER_CONTROLLER.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EccsUnitBlockEntity>> ECCS_UNIT =
+            BLOCK_ENTITIES.register("eccs_unit", () ->
+                    BlockEntityType.Builder.of(EccsUnitBlockEntity::new, ModBlocks.ECCS_UNIT.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NuclearWasteCaskBlockEntity>> NUCLEAR_WASTE_CASK =
+            BLOCK_ENTITIES.register("nuclear_waste_cask", () ->
+                    BlockEntityType.Builder.of(NuclearWasteCaskBlockEntity::new, ModBlocks.NUCLEAR_WASTE_CASK.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RtgGeneratorBlockEntity>> RTG_GENERATOR =
+            BLOCK_ENTITIES.register("rtg_generator", () ->
+                    BlockEntityType.Builder.of(RtgGeneratorBlockEntity::new, ModBlocks.RTG_GENERATOR.get()).build(null));
 }

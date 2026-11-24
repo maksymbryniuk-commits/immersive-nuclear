@@ -1,0 +1,5 @@
+Gas Centrifuge
+Uranium Enrichment
+The Gas Centrifuge (3x4x2) uses Steel Scaffolding, Sheetmetal, and Heavy/Light Engineering blocks.
+
+It requires 1024 FE/t to spin up the rotor to 60,000 RPM. Separation starts only above 80% RPM (48,000 RPM), splitting UF6 into Enriched U-235 and Depleted UF6.

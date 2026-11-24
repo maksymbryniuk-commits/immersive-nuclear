@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CWC",
+    "C C",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "ienuclear:reactor_casing"
+    },
+    "W": {
+      "item": "minecraft:water_bucket"
+    }
+  },
+  "result": {
+    "id": "ienuclear:spent_fuel_pool",
+    "count": 1
+  }
+}

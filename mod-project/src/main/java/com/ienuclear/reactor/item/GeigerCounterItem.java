@@ -26,6 +26,20 @@ public class GeigerCounterItem extends Item {
     }
 
     @Override
+    public void inventoryTick(ItemStack stack, Level level, net.minecraft.world.entity.Entity entity, int slotId, boolean isSelected) {
+        if (!level.isClientSide && entity instanceof Player player && level.getGameTime() % 20 == 0) {
+            BlockPos center = player.blockPosition();
+            for (BlockPos pos : BlockPos.betweenClosed(center.offset(-8, -4, -8), center.offset(8, 4, 8))) {
+                if (level.getBlockState(pos).is(ModBlocks.MOLTEN_CORIUM.get())
+                        || (level.getBlockEntity(pos) instanceof ReactorControllerBlockEntity r && r.isActive())) {
+                    level.playSound(null, center, SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.PLAYERS, 0.35f, 1.8f);
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {

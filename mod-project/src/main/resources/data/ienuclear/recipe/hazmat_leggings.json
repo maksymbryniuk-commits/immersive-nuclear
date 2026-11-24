@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "YYY",
+    "Y Y",
+    "Y Y"
+  ],
+  "key": {
+    "Y": {
+      "item": "minecraft:yellow_wool"
+    }
+  },
+  "result": {
+    "id": "ienuclear:hazmat_leggings",
+    "count": 1
+  }
+}

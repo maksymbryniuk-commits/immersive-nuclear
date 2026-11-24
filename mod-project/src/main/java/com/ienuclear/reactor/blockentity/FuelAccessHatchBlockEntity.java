@@ -82,7 +82,8 @@ public class FuelAccessHatchBlockEntity extends BlockEntity implements MenuProvi
     public static boolean isFuelCapsule(ItemStack stack) {
         return stack.is(ModItems.NUCLEAR_FUEL_ROD.get())
                 || stack.is(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get())
-                || stack.is(ModItems.MOX_FUEL_CAPSULE.get());
+                || stack.is(ModItems.MOX_FUEL_CAPSULE.get())
+                || stack.is(ModItems.THORIUM_FUEL_CAPSULE.get());
     }
 
     public static boolean isReactorPlate(ItemStack stack) {
@@ -135,9 +136,11 @@ public class FuelAccessHatchBlockEntity extends BlockEntity implements MenuProvi
             if (isFuelCapsule(stack)) {
                 activeCapsules++;
                 double basePower = stack.is(ModItems.MOX_FUEL_CAPSULE.get()) ? 3.0
-                        : (stack.is(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get()) ? 2.0 : 1.0);
+                        : (stack.is(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get()) ? 2.0
+                        : (stack.is(ModItems.THORIUM_FUEL_CAPSULE.get()) ? 1.2 : 1.0));
                 int baseHeat = stack.is(ModItems.MOX_FUEL_CAPSULE.get()) ? 11
-                        : (stack.is(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get()) ? 7 : 4);
+                        : (stack.is(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get()) ? 7
+                        : (stack.is(ModItems.THORIUM_FUEL_CAPSULE.get()) ? 3 : 4));
 
                 double adjBonus = 0.0;
                 int heatMod = 0;

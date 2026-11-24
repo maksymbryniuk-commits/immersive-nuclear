@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDD",
+    "DDD",
+    "DDD"
+  ],
+  "key": {
+    "D": {
+      "item": "ienuclear:depleted_uranium_ingot"
+    }
+  },
+  "result": {
+    "id": "ienuclear:depleted_uranium_block",
+    "count": 1
+  }
+}

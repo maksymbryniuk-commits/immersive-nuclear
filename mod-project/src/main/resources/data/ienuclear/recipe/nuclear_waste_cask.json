@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "CIC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "immersiveengineering:concrete_leaded"
+    },
+    "I": {
+      "item": "ienuclear:depleted_uranium_ingot"
+    }
+  },
+  "result": {
+    "id": "ienuclear:nuclear_waste_cask",
+    "count": 1
+  }
+}

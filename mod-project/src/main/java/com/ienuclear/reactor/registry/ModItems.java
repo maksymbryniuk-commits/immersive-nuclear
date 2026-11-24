@@ -3,6 +3,7 @@ package com.ienuclear.reactor.registry;
 import com.ienuclear.reactor.IENuclearMod;
 import com.ienuclear.reactor.item.GeigerCounterItem;
 import com.ienuclear.reactor.item.IodineTabletItem;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
@@ -111,4 +112,90 @@ public class ModItems {
             () -> new BucketItem(ModFluids.HOT_STEAM_SOURCE.get(),
                     new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1))
     );
+
+    // v3.0: Нові паливні елементи, матеріали, броня хімзахисту, відра, блоки
+    public static final DeferredItem<Item> THORIUM_FUEL_CAPSULE = ITEMS.register(
+            "thorium_fuel_capsule",
+            () -> new Item(new Item.Properties().durability(5400).setNoRepair())
+    );
+    public static final DeferredItem<Item> DEPLETED_URANIUM_INGOT = ITEMS.register(
+            "depleted_uranium_ingot",
+            () -> new Item(new Item.Properties())
+    );
+    public static final DeferredItem<Item> TRITIUM_CELL = ITEMS.register(
+            "tritium_cell",
+            () -> new Item(new Item.Properties().stacksTo(16))
+    );
+    public static final DeferredItem<Item> AP_URANIUM_SLUG = ITEMS.register(
+            "ap_uranium_slug",
+            () -> new Item(new Item.Properties().stacksTo(64))
+    );
+
+    // Костюм хімзахисту (Hazmat Suit)
+    public static final DeferredItem<ArmorItem> HAZMAT_HELMET = ITEMS.register(
+            "hazmat_helmet",
+            () -> new ArmorItem(ModArmorMaterials.HAZMAT, ArmorItem.Type.HELMET, new Item.Properties().stacksTo(1))
+    );
+    public static final DeferredItem<ArmorItem> HAZMAT_CHESTPLATE = ITEMS.register(
+            "hazmat_chestplate",
+            () -> new ArmorItem(ModArmorMaterials.HAZMAT, ArmorItem.Type.CHESTPLATE, new Item.Properties().stacksTo(1).durability(2400))
+    );
+    public static final DeferredItem<ArmorItem> HAZMAT_LEGGINGS = ITEMS.register(
+            "hazmat_leggings",
+            () -> new ArmorItem(ModArmorMaterials.HAZMAT, ArmorItem.Type.LEGGINGS, new Item.Properties().stacksTo(1))
+    );
+    public static final DeferredItem<ArmorItem> HAZMAT_BOOTS = ITEMS.register(
+            "hazmat_boots",
+            () -> new ArmorItem(ModArmorMaterials.HAZMAT, ArmorItem.Type.BOOTS, new Item.Properties().stacksTo(1))
+    );
+
+    // Нові відра рідин v3.0
+    public static final DeferredItem<BucketItem> DEPLETED_UF6_BUCKET = ITEMS.register(
+            "depleted_uf6_bucket",
+            () -> new BucketItem(ModFluids.DEPLETED_UF6_SOURCE.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+    public static final DeferredItem<BucketItem> LIQUID_SODIUM_BUCKET = ITEMS.register(
+            "liquid_sodium_bucket",
+            () -> new BucketItem(ModFluids.LIQUID_SODIUM_SOURCE.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+    public static final DeferredItem<BucketItem> HOT_COOLANT_BUCKET = ITEMS.register(
+            "hot_coolant_bucket",
+            () -> new BucketItem(ModFluids.HOT_COOLANT_SOURCE.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+    public static final DeferredItem<BucketItem> DISTILLED_WATER_BUCKET = ITEMS.register(
+            "distilled_water_bucket",
+            () -> new BucketItem(ModFluids.DISTILLED_WATER_SOURCE.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+    public static final DeferredItem<BucketItem> EXHAUST_STEAM_BUCKET = ITEMS.register(
+            "exhaust_steam_bucket",
+            () -> new BucketItem(ModFluids.EXHAUST_STEAM_SOURCE.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+
+    // Нові BlockItem v3.0
+    public static final DeferredItem<BlockItem> COOLING_LOOP_ITEM =
+            ITEMS.registerSimpleBlockItem("cooling_loop", ModBlocks.COOLING_LOOP);
+    public static final DeferredItem<BlockItem> REMOTE_CONTROL_PORT_ITEM =
+            ITEMS.registerSimpleBlockItem("remote_control_port", ModBlocks.REMOTE_CONTROL_PORT);
+    public static final DeferredItem<BlockItem> CONTROL_CABLE_ITEM =
+            ITEMS.registerSimpleBlockItem("control_cable", ModBlocks.CONTROL_CABLE);
+    public static final DeferredItem<BlockItem> CONTROL_DESK_ITEM =
+            ITEMS.registerSimpleBlockItem("control_desk", ModBlocks.CONTROL_DESK);
+    public static final DeferredItem<BlockItem> GAS_CENTRIFUGE_ITEM =
+            ITEMS.registerSimpleBlockItem("gas_centrifuge", ModBlocks.GAS_CENTRIFUGE);
+    public static final DeferredItem<BlockItem> FUEL_ROD_ASSEMBLER_ITEM =
+            ITEMS.registerSimpleBlockItem("fuel_rod_assembler", ModBlocks.FUEL_ROD_ASSEMBLER);
+    public static final DeferredItem<BlockItem> SPENT_FUEL_POOL_ITEM =
+            ITEMS.registerSimpleBlockItem("spent_fuel_pool", ModBlocks.SPENT_FUEL_POOL);
+    public static final DeferredItem<BlockItem> COOLING_TOWER_ITEM =
+            ITEMS.registerSimpleBlockItem("cooling_tower", ModBlocks.COOLING_TOWER);
+    public static final DeferredItem<BlockItem> HEAT_EXCHANGER_CONTROLLER_ITEM =
+            ITEMS.registerSimpleBlockItem("heat_exchanger_controller", ModBlocks.HEAT_EXCHANGER_CONTROLLER);
+    public static final DeferredItem<BlockItem> ECCS_UNIT_ITEM =
+            ITEMS.registerSimpleBlockItem("eccs_unit", ModBlocks.ECCS_UNIT);
+    public static final DeferredItem<BlockItem> NUCLEAR_WASTE_CASK_ITEM =
+            ITEMS.registerSimpleBlockItem("nuclear_waste_cask", ModBlocks.NUCLEAR_WASTE_CASK);
+    public static final DeferredItem<BlockItem> RTG_GENERATOR_ITEM =
+            ITEMS.registerSimpleBlockItem("rtg_generator", ModBlocks.RTG_GENERATOR);
+    public static final DeferredItem<BlockItem> DEPLETED_URANIUM_BLOCK_ITEM =
+            ITEMS.registerSimpleBlockItem("depleted_uranium_block", ModBlocks.DEPLETED_URANIUM_BLOCK);
 }
