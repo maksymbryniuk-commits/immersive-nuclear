@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ESE",
+    "GCG",
+    "ERE"
+  ],
+  "key": {
+    "E": { "tag": "c:plates/electrum" },
+    "S": { "tag": "c:plates/steel" },
+    "G": { "item": "minecraft:glass_pane" },
+    "C": { "item": "immersiveengineering:component_electronic" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:geiger_counter"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "SCS",
+    " S "
+  ],
+  "key": {
+    "S": { "tag": "c:plates/steel" },
+    "C": { "item": "immersiveengineering:coil_hv" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:turbine_rotor"
+  }
+}

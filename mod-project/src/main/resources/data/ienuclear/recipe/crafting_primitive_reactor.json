@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LHL",
+    "SRS",
+    "LCL"
+  ],
+  "key": {
+    "L": { "tag": "c:plates/lead" },
+    "H": { "item": "immersiveengineering:connector_mv" },
+    "S": { "tag": "c:plates/steel" },
+    "R": { "item": "ienuclear:reactor_core_rod" },
+    "C": { "item": "minecraft:bucket" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:primitive_reactor"
+  }
+}

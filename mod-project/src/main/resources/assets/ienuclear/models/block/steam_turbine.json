@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "ienuclear:block/steam_turbine_side",
+    "front": "ienuclear:block/steam_turbine_front",
+    "side": "ienuclear:block/steam_turbine_side"
+  }
+}

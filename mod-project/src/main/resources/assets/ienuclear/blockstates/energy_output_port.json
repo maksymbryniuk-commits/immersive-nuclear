@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "ienuclear:block/energy_output_port"
+    }
+  }
+}

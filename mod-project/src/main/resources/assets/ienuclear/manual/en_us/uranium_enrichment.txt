@@ -1,0 +1,10 @@
+Uranium Enrichment & Coolant
+Immersive Engineering Fuel Cycle
+
+Use Immersive Engineering multiblock machines to manufacture nuclear fuel:
+
+1. Crusher: Grind raw uranium into Yellowcake Uranium Concentrate.
+2. Mixer: Combine Yellowcake, Water, and Redstone into Uranium Hexafluoride (UF6).
+3. Refinery: Enrich UF6 with Ethanol to produce Enriched Uranium Solution (U-235).
+4. Metal Press: Stamp Steel Plates (Rod Mold) into Empty Fuel Rods and Uranium Ingots into Pellets.
+5. Heavy Coolant: Mix Water, Lapis, and Saltpeter Dust in the IE Mixer for 2.5x cooling efficiency.

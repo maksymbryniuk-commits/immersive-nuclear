@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SCS",
+    "HGH",
+    "SCS"
+  ],
+  "key": {
+    "S": { "item": "ienuclear:reactor_casing" },
+    "C": { "item": "immersiveengineering:coil_hv" },
+    "H": { "item": "immersiveengineering:connector_hv" },
+    "G": { "tag": "c:ingots/electrum" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:energy_output_port"
+  }
+}

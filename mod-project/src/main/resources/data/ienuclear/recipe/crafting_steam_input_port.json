@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TST",
+    "PPP",
+    "TST"
+  ],
+  "key": {
+    "T": { "item": "ienuclear:turbine_casing" },
+    "S": { "tag": "c:plates/iron" },
+    "P": { "item": "immersiveengineering:fluid_pipe" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:steam_input_port"
+  }
+}

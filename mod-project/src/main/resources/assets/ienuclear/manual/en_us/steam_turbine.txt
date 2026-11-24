@@ -1,0 +1,11 @@
+Steam Turbine (3x3x5)
+High-Pressure Steam FE Generator
+
+<&steam_turbine_mb>
+
+A 3-wide x 3-high x 5-long multiblock Steam Turbine that converts Hot Steam from the nuclear reactor into up to 36,000 FE/t at 3600 RPM.
+
+3x3x5 Structure:
+- Front center: 1x Steam Turbine Controller (opens GUI with RPM, status, and FE output).
+- Inner shaft (3 blocks along center axis): 3x Steam Turbine Rotor.
+- Outer shell: Turbine Casing (or Reactor Glass), at least 1x Steam Input Port and 1x FE Energy Output Port.

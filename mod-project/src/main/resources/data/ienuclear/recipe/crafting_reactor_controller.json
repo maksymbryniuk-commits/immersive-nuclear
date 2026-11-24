@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SCS",
+    "ERE",
+    "SLS"
+  ],
+  "key": {
+    "S": { "item": "ienuclear:reactor_casing" },
+    "C": { "item": "immersiveengineering:component_electronic_adv" },
+    "E": { "item": "immersiveengineering:coil_hv" },
+    "R": { "tag": "c:dusts/redstone" },
+    "L": { "tag": "c:plates/lead" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:reactor_controller"
+  }
+}

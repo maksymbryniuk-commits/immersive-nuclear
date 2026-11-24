@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SCS",
+    "CMC",
+    "SCS"
+  ],
+  "key": {
+    "S": { "tag": "c:plates/steel" },
+    "C": { "tag": "c:plates/copper" },
+    "M": { "item": "immersiveengineering:sheetmetal_steel" }
+  },
+  "result": {
+    "count": 4,
+    "id": "ienuclear:turbine_casing"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "immersiveengineering:crusher",
+  "energy": 4800,
+  "input": {
+    "tag": "c:raw_materials/uranium"
+  },
+  "result": {
+    "count": 2,
+    "id": "ienuclear:yellowcake_uranium"
+  },
+  "secondaries": [
+    {
+      "chance": 0.35,
+      "output": {
+        "count": 1,
+        "id": "immersiveengineering:dust_uranium"
+      }
+    }
+  ]
+}

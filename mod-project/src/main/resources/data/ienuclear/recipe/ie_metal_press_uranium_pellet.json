@@ -1,0 +1,15 @@
+{
+  "type": "immersiveengineering:metal_press",
+  "energy": 4200,
+  "input": {
+    "count": 1,
+    "basePredicate": {
+      "tag": "c:ingots/uranium"
+    }
+  },
+  "mold": "immersiveengineering:mold_bullet_casing",
+  "result": {
+    "count": 2,
+    "id": "ienuclear:enriched_uranium_pellet"
+  }
+}

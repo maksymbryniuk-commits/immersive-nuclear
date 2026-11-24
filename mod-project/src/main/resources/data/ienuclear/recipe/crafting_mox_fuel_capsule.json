@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PUP",
+    "LRL",
+    "PUP"
+  ],
+  "key": {
+    "P": { "item": "ienuclear:plutonium_dust" },
+    "U": { "item": "ienuclear:enriched_uranium_pellet" },
+    "L": { "tag": "c:plates/lead" },
+    "R": { "item": "ienuclear:empty_fuel_rod" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:mox_fuel_capsule"
+  }
+}

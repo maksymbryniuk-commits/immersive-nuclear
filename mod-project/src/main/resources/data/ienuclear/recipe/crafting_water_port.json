@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SCS",
+    "PBP",
+    "SCS"
+  ],
+  "key": {
+    "S": { "item": "ienuclear:reactor_casing" },
+    "C": { "tag": "c:plates/iron" },
+    "P": { "item": "immersiveengineering:fluid_pipe" },
+    "B": { "item": "minecraft:water_bucket" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:water_input_port"
+  }
+}

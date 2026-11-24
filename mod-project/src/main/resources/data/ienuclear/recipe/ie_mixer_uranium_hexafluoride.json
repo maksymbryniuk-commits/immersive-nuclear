@@ -1,0 +1,26 @@
+{
+  "type": "immersiveengineering:mixer",
+  "energy": 6400,
+  "fluid": {
+    "amount": 1000,
+    "tag": "minecraft:water"
+  },
+  "inputs": [
+    {
+      "count": 2,
+      "basePredicate": {
+        "item": "ienuclear:yellowcake_uranium"
+      }
+    },
+    {
+      "count": 2,
+      "basePredicate": {
+        "tag": "c:dusts/redstone"
+      }
+    }
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "ienuclear:uranium_hexafluoride"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "immersiveengineering:metal_press",
+  "energy": 3600,
+  "input": {
+    "count": 2,
+    "basePredicate": {
+      "tag": "c:plates/steel"
+    }
+  },
+  "mold": "immersiveengineering:mold_rod",
+  "result": {
+    "count": 1,
+    "id": "ienuclear:empty_fuel_rod"
+  }
+}

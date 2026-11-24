@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SGS",
+    "PPP",
+    "SGS"
+  ],
+  "key": {
+    "S": { "item": "ienuclear:reactor_casing" },
+    "G": { "tag": "c:plates/copper" },
+    "P": { "item": "immersiveengineering:fluid_pipe" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:steam_output_port"
+  }
+}

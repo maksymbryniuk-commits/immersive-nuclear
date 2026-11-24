@@ -1,0 +1,20 @@
+{
+  "type": "immersiveengineering:crusher",
+  "energy": 6400,
+  "input": {
+    "item": "ienuclear:depleted_fuel_rod"
+  },
+  "result": {
+    "count": 2,
+    "id": "ienuclear:plutonium_dust"
+  },
+  "secondaries": [
+    {
+      "chance": 0.5,
+      "output": {
+        "count": 1,
+        "id": "ienuclear:empty_fuel_rod"
+      }
+    }
+  ]
+}

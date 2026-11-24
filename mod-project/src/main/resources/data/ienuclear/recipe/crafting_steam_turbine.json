@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SHS",
+    "PGP",
+    "SCS"
+  ],
+  "key": {
+    "S": { "tag": "c:plates/steel" },
+    "H": { "item": "immersiveengineering:connector_hv" },
+    "P": { "item": "immersiveengineering:fluid_pipe" },
+    "G": { "item": "immersiveengineering:generator" },
+    "C": { "item": "immersiveengineering:coil_hv" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:steam_turbine"
+  }
+}

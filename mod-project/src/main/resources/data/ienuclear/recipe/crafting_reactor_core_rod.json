@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RCR",
+    "RUR",
+    "RCR"
+  ],
+  "key": {
+    "R": { "item": "ienuclear:empty_fuel_rod" },
+    "C": { "tag": "c:ingots/steel" },
+    "U": { "tag": "c:storage_blocks/uranium" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:reactor_core_rod"
+  }
+}

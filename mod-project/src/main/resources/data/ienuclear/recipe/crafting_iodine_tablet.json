@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "minecraft:kelp" },
+    { "item": "minecraft:sugar" },
+    { "item": "minecraft:paper" },
+    { "item": "minecraft:glowstone_dust" }
+  ],
+  "result": {
+    "count": 4,
+    "id": "ienuclear:iodine_tablet"
+  }
+}

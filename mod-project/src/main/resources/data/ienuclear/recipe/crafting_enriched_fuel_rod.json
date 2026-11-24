@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PBP",
+    "ERE",
+    "PBP"
+  ],
+  "key": {
+    "P": { "item": "ienuclear:enriched_uranium_pellet" },
+    "B": { "item": "ienuclear:enriched_uranium_bucket" },
+    "E": { "tag": "c:plates/lead" },
+    "R": { "item": "ienuclear:empty_fuel_rod" }
+  },
+  "result": {
+    "count": 1,
+    "id": "ienuclear:enriched_nuclear_fuel_rod"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "immersiveengineering:refinery",
+  "energy": 160,
+  "input0": {
+    "amount": 10,
+    "fluid": "ienuclear:uranium_hexafluoride"
+  },
+  "input1": {
+    "amount": 5,
+    "tag": "c:ethanol"
+  },
+  "result": {
+    "amount": 10,
+    "id": "ienuclear:enriched_uranium_solution"
+  }
+}

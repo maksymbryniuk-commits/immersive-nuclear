@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,active=false": {
+      "model": "ienuclear:block/primitive_reactor"
+    },
+    "facing=south,active=false": {
+      "model": "ienuclear:block/primitive_reactor",
+      "y": 180
+    },
+    "facing=west,active=false": {
+      "model": "ienuclear:block/primitive_reactor",
+      "y": 270
+    },
+    "facing=east,active=false": {
+      "model": "ienuclear:block/primitive_reactor",
+      "y": 90
+    },
+    "facing=north,active=true": {
+      "model": "ienuclear:block/primitive_reactor_active"
+    },
+    "facing=south,active=true": {
+      "model": "ienuclear:block/primitive_reactor_active",
+      "y": 180
+    },
+    "facing=west,active=true": {
+      "model": "ienuclear:block/primitive_reactor_active",
+      "y": 270
+    },
+    "facing=east,active=true": {
+      "model": "ienuclear:block/primitive_reactor_active",
+      "y": 90
+    }
+  }
+}

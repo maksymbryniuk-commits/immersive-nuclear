@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SLS",
+    "LCL",
+    "SLS"
+  ],
+  "key": {
+    "S": { "tag": "c:plates/steel" },
+    "L": { "tag": "c:plates/lead" },
+    "C": { "item": "immersiveengineering:sheetmetal_steel" }
+  },
+  "result": {
+    "count": 4,
+    "id": "ienuclear:reactor_casing"
+  }
+}
