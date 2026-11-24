@@ -1,0 +1,9 @@
+{
+  "pool_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:spent_fuel_pool",
+      "ienuclear:nuclear_waste_cask"
+    ]
+  }
+}

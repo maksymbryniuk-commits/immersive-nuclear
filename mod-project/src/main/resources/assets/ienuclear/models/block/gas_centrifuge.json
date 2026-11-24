@@ -1,6 +1,8 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/orientable",
   "textures": {
-    "all": "ienuclear:block/gas_centrifuge"
+    "top": "ienuclear:block/gas_centrifuge_top",
+    "front": "ienuclear:block/gas_centrifuge_front",
+    "side": "ienuclear:block/gas_centrifuge_side"
   }
 }

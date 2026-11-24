@@ -1,8 +1,12 @@
 Nuclear Reactor 7x7x7
-Industrial Mega-Reactor (27+ Cores)
+Mega-Reactor with Cooling Loops & Remote Control
 
 <&nuclear_reactor_7x7_mb>
 
-A massive 7x7x7 steam reactor housing a 3x3x3 core array (27x Reactor Core Rods) and multiple I/O ports to feed multiple Steam Turbines simultaneously.
-- Top lid: 1+ Fuel Access Hatch.
-- Shell: Reactor Casing, Reactor Glass, 2+ Coolant Ports, 2+ Water Ports, 2+ Steam Output Ports, 1x Controller.
+The 7x7x7 steam reactor holds 27x Core Rods surrounded by 16x Cooling Loops inside its 5x5x5 core chamber, plus 2x Top Fuel Access Hatches and a Remote Control Port.
+
+Integrations:
+- Internal Cooling Loops cut heat by -3/tick each and reduce coolant drain by 4% per loop (up to 50%).
+- Liquid Sodium coolant cools 2x better than Heavy Coolant and exports Hot Coolant from the Controller!
+- Distilled Water produces +25% more Hot Steam.
+<&cooling_loop_craft>

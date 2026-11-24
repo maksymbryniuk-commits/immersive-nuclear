@@ -53,7 +53,8 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
             if (slot == FUEL_SLOT) {
                 return stack.is(ModItems.NUCLEAR_FUEL_ROD.get())
                         || stack.is(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get())
-                        || stack.is(ModItems.MOX_FUEL_CAPSULE.get());
+                        || stack.is(ModItems.MOX_FUEL_CAPSULE.get())
+                        || stack.is(ModItems.THORIUM_FUEL_CAPSULE.get());
             }
             return false;
         }
@@ -61,6 +62,8 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
 
     private final FluidTank coolantTank = new FluidTank(COOLANT_CAPACITY, stack ->
             stack.getFluid().isSame(ModFluids.HEAVY_COOLANT_SOURCE.get())
+                    || stack.getFluid().isSame(ModFluids.LIQUID_SODIUM_SOURCE.get())
+                    || stack.getFluid().isSame(ModFluids.DISTILLED_WATER_SOURCE.get())
                     || stack.getFluid().isSame(Fluids.WATER)) {
         @Override
         protected void onContentsChanged() {
@@ -76,6 +79,7 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
     private int maxFuelTicks = 0;
     private int currentFePerTick = 0;
     private int currentFuelMultiplier = 1;
+    private boolean currentFuelIsThorium = false;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -138,10 +142,12 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
                 boolean hasCoolant = reactor.coolantTank.getFluidAmount() > 0;
 
                 if (hasCoolant) {
+                    boolean sodium = reactor.coolantTank.getFluid().getFluid().isSame(ModFluids.LIQUID_SODIUM_SOURCE.get());
                     boolean heavy = reactor.coolantTank.getFluid().getFluid().isSame(ModFluids.HEAVY_COOLANT_SOURCE.get());
-                    int cost = heavy ? 2 : 6;
+                    boolean dist = reactor.coolantTank.getFluid().getFluid().isSame(ModFluids.DISTILLED_WATER_SOURCE.get());
+                    int cost = sodium ? 1 : (heavy ? 2 : (dist ? 4 : 6));
                     reactor.coolantTank.drain(cost, IFluidHandler.FluidAction.EXECUTE);
-                    int targetTemp = heavy ? 420 : 680;
+                    int targetTemp = sodium ? 340 : (heavy ? 420 : (dist ? 540 : 680));
                     if (reactor.temperature < targetTemp) {
                         reactor.temperature += 4;
                     } else if (reactor.temperature > targetTemp) {
@@ -152,6 +158,15 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
                     reactor.temperature += (12 * reactor.currentFuelMultiplier);
                 }
 
+                if (reactor.temperature >= 850 && level.getGameTime() % 20 == 0) {
+                    net.minecraft.world.phys.AABB box = new net.minecraft.world.phys.AABB(pos).inflate(5.0);
+                    for (Player p : level.getEntitiesOfClass(Player.class, box)) {
+                        if (!p.isCreative() && !NuclearWasteCaskBlockEntity.hasFullHazmat(p)) {
+                            p.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.POISON, 60, 0));
+                        }
+                    }
+                }
+
                 if (reactor.temperature >= MELTDOWN_TEMP) {
                     level.destroyBlock(pos, false);
                     level.explode(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
@@ -160,12 +175,15 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
                     return;
                 }
 
-                int generated = 512 * reactor.currentFuelMultiplier;
+                int generated = reactor.currentFuelIsThorium ? 614 : (512 * reactor.currentFuelMultiplier);
                 reactor.energyStorage.addInternalEnergy(generated);
                 reactor.currentFePerTick = generated;
 
                 if (reactor.fuelTicksRemaining == 0) {
-                    reactor.inventory.insertItem(DEPLETED_SLOT, new ItemStack(ModItems.EMPTY_FUEL_ROD.get(), 1), false);
+                    ItemStack spent = reactor.currentFuelIsThorium
+                            ? new ItemStack(ModItems.EMPTY_FUEL_ROD.get(), 1)
+                            : new ItemStack(ModItems.DEPLETED_FUEL_ROD.get(), 1);
+                    reactor.inventory.insertItem(DEPLETED_SLOT, spent, false);
                 }
             } else {
                 reactor.active = false;
@@ -205,16 +223,25 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
 
         if (stack.is(ModItems.MOX_FUEL_CAPSULE.get())) {
             currentFuelMultiplier = 3;
+            currentFuelIsThorium = false;
             maxFuelTicks = 3600;
             fuelTicksRemaining = 3600;
             stack.shrink(1);
         } else if (stack.is(ModItems.ENRICHED_NUCLEAR_FUEL_ROD.get())) {
             currentFuelMultiplier = 2;
+            currentFuelIsThorium = false;
             maxFuelTicks = 4800;
             fuelTicksRemaining = 4800;
             stack.shrink(1);
+        } else if (stack.is(ModItems.THORIUM_FUEL_CAPSULE.get())) {
+            currentFuelMultiplier = 1;
+            currentFuelIsThorium = true;
+            maxFuelTicks = 5400;
+            fuelTicksRemaining = 5400;
+            stack.shrink(1);
         } else if (stack.is(ModItems.NUCLEAR_FUEL_ROD.get())) {
             currentFuelMultiplier = 1;
+            currentFuelIsThorium = false;
             maxFuelTicks = 2400;
             fuelTicksRemaining = 2400;
             stack.shrink(1);
@@ -251,6 +278,7 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
         tag.putInt("FuelTicks", fuelTicksRemaining);
         tag.putInt("MaxFuelTicks", maxFuelTicks);
         tag.putInt("FuelMult", currentFuelMultiplier);
+        tag.putBoolean("FuelThorium", currentFuelIsThorium);
     }
 
     @Override
@@ -264,6 +292,7 @@ public class PrimitiveReactorBlockEntity extends BlockEntity implements MenuProv
         fuelTicksRemaining = tag.getInt("FuelTicks");
         maxFuelTicks = tag.getInt("MaxFuelTicks");
         currentFuelMultiplier = Math.max(1, tag.getInt("FuelMult"));
+        currentFuelIsThorium = tag.getBoolean("FuelThorium");
     }
 
     private static class PrimitiveEnergyStorage extends EnergyStorage {

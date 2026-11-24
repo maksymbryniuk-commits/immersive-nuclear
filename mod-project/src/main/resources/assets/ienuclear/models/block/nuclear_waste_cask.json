@@ -1,6 +1,12 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "ienuclear:block/nuclear_waste_cask"
+    "up": "ienuclear:block/nuclear_waste_cask_top",
+    "down": "ienuclear:block/nuclear_waste_cask_top",
+    "north": "ienuclear:block/nuclear_waste_cask_side",
+    "south": "ienuclear:block/nuclear_waste_cask_side",
+    "east": "ienuclear:block/nuclear_waste_cask_side",
+    "west": "ienuclear:block/nuclear_waste_cask_side",
+    "particle": "ienuclear:block/nuclear_waste_cask_side"
   }
 }

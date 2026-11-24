@@ -1,0 +1,19 @@
+{
+  "hazmat_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:hazmat_helmet",
+      "ienuclear:hazmat_chestplate",
+      "ienuclear:hazmat_leggings",
+      "ienuclear:hazmat_boots"
+    ]
+  },
+  "side_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:rtg_generator",
+      "ienuclear:depleted_uranium_block",
+      "ienuclear:ap_uranium_slug"
+    ]
+  }
+}

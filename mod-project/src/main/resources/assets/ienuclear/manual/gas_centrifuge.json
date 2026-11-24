@@ -1,1 +1,9 @@
-{}
+{
+  "centrifuge_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:gas_centrifuge",
+      "ienuclear:fuel_rod_assembler"
+    ]
+  }
+}

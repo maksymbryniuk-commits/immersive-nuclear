@@ -166,11 +166,14 @@ public class FuelAccessHatchBlockEntity extends BlockEntity implements MenuProvi
                 totalPower += (basePower + adjBonus) * powerFactor;
                 totalHeat += Math.max(1, (int) Math.round((baseHeat + heatMod) * powerFactor));
 
-                // Знос міцності паливної капсули; при 0% -> перетворюється на Порожню капсулу!
+                // Знос міцності паливної капсули: уран/МОКС стають гарячими Відпрацьованими стрижнями (охолоджуються у басейні 3x3x3), а Торій -> Порожній капсулою!
                 if (powerFactor > 0.0 && (powerFactor >= 0.75 || gameTime % 2 == 0)) {
                     int nextDmg = stack.getDamageValue() + 1;
                     if (nextDmg >= stack.getMaxDamage()) {
-                        inventory.setStackInSlot(slot, new ItemStack(ModItems.EMPTY_FUEL_ROD.get()));
+                        ItemStack spentOut = stack.is(ModItems.THORIUM_FUEL_CAPSULE.get())
+                                ? new ItemStack(ModItems.EMPTY_FUEL_ROD.get())
+                                : new ItemStack(ModItems.DEPLETED_FUEL_ROD.get());
+                        inventory.setStackInSlot(slot, spentOut);
                     } else {
                         stack.setDamageValue(nextDmg);
                     }

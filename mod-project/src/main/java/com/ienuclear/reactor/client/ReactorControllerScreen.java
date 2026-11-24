@@ -139,8 +139,8 @@ public class ReactorControllerScreen extends AbstractContainerScreen<ReactorCont
         gui.drawString(this.font, status, 72, 23, statusCol, false);
         gui.drawString(this.font, "TEMP: " + temp + "C", 72, 34, tempCol, false);
         gui.drawString(this.font, "STM: +" + menu.getSteamPerTick() + "mB/t", 72, 45, 0xFF86EFAC, false);
-        gui.drawString(this.font, "ROD:" + menu.getActiveCapsulesCount() + " COR:" + menu.getCoreCount(), 72, 56, 0xFF22EEFF, false);
-        gui.drawString(this.font, "RODS " + menu.getControlRodInsertion() + "%", 93, 72, 0xFF33FF66, false);
+        gui.drawString(this.font, "ROD:" + menu.getActiveCapsulesCount() + " COR:" + menu.getCoreCount() + " LP:" + menu.getCoolingLoopCount(), 72, 56, 0xFF22EEFF, false);
+        gui.drawString(this.font, "RODS " + menu.getControlRodInsertion() + "%", 93, 72, menu.isEccsReady() ? 0xFF33FF66 : 0xFF86EFAC, false);
 
         gui.drawString(this.font, "T", 17, 102, 0xFF33FF66, false);
         gui.drawString(this.font, "C", 35, 102, 0xFF22EEFF, false);

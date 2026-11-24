@@ -1,6 +1,7 @@
 package com.ienuclear.reactor.blockentity;
 
 import com.ienuclear.reactor.registry.ModBlockEntities;
+import com.ienuclear.reactor.registry.ModFluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -14,7 +15,8 @@ import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 public class WaterInputPortBlockEntity extends BlockEntity {
     public static final int CAPACITY = 16000;
 
-    private final FluidTank fluidTank = new FluidTank(CAPACITY, stack -> stack.getFluid().isSame(Fluids.WATER)) {
+    private final FluidTank fluidTank = new FluidTank(CAPACITY, stack ->
+            stack.getFluid().isSame(Fluids.WATER) || stack.getFluid().isSame(ModFluids.DISTILLED_WATER_SOURCE.get())) {
         @Override
         protected void onContentsChanged() {
             setChanged();
@@ -31,6 +33,11 @@ public class WaterInputPortBlockEntity extends BlockEntity {
 
     public int getFluidAmount() {
         return fluidTank.getFluidAmount();
+    }
+
+    public boolean isDistilledWater() {
+        FluidStack s = fluidTank.getFluid();
+        return !s.isEmpty() && s.getFluid().isSame(ModFluids.DISTILLED_WATER_SOURCE.get());
     }
 
     public int drainWater(int amount) {

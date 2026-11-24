@@ -1,3 +1,11 @@
-Cooling Tower
-Closed Water Loop
-A 7x7x10 concrete tower that condenses Exhaust Steam back into Distilled Water for closed-loop reactor operation.
+Cooling Tower (7x10x7)
+Closed Steam-Water Cycle
+
+<&cooling_tower_mb>
+
+A monumental 7x10x7 concrete tower built with IE Concrete, Leaded Concrete base, and the Cooling Tower Controller.
+
+Closed Loop:
+- Receives Exhaust Steam automatically output by the Steam Turbine (3x3x5).
+- Condenses Exhaust Steam 1:1 back into pure Distilled Water and pumps it back into Reactors / Heat Exchangers (+25% Steam output!).
+<&tower_craft>

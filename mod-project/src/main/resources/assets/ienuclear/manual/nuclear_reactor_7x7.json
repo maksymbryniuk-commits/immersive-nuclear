@@ -1,1 +1,9 @@
-{}
+{
+  "cooling_loop_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:cooling_loop",
+      "ienuclear:eccs_unit"
+    ]
+  }
+}

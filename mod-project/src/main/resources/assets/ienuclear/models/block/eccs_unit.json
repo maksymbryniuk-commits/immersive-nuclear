@@ -1,6 +1,8 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/orientable",
   "textures": {
-    "all": "ienuclear:block/eccs_unit"
+    "top": "ienuclear:block/eccs_side",
+    "front": "ienuclear:block/eccs_front",
+    "side": "ienuclear:block/eccs_side"
   }
 }

@@ -139,6 +139,18 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
         } else if (be.heat > 20 && level.getGameTime() % 4 == 0) {
             be.heat--;
         }
+        // Автовиштовхування чистої пари в сусідні труби / порти турбіни
+        if (!be.secondarySteamTank.isEmpty()) {
+            for (Direction d : Direction.values()) {
+                IFluidHandler target = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK, pos.relative(d), d.getOpposite());
+                if (target != null) {
+                    int amt = Math.min(be.secondarySteamTank.getFluidAmount(), 1000);
+                    int acc = target.fill(new FluidStack(ModFluids.HOT_STEAM_SOURCE.get(), amt), IFluidHandler.FluidAction.EXECUTE);
+                    if (acc > 0) be.secondarySteamTank.drain(acc, IFluidHandler.FluidAction.EXECUTE);
+                    if (be.secondarySteamTank.isEmpty()) break;
+                }
+            }
+        }
         be.setChanged();
     }
 

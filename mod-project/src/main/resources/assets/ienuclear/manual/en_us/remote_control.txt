@@ -1,0 +1,10 @@
+Control Desk & ECCS
+Remote Monitoring, AZ-5 & Safety
+
+Build a Control Desk away from the reactor bunker and link it with Control Cables (up to 64 blocks) to a Remote Control Port on the reactor shell.
+
+Controls & Safety:
+- Retro-CRT UI shows Temp, Steam, Rods, and Active Capsules live.
+- Buttons: Start/Stop, Rods -10%/+10%, ECCS Flood, and the red AZ-5 Emergency SCRAM!
+- Place an ECCS Unit adjacent to any reactor wall to auto-quench cores at >= 1100 C!
+<&remote_craft>

@@ -17,6 +17,8 @@ public class CoolantInputPortBlockEntity extends BlockEntity {
 
     private final FluidTank fluidTank = new FluidTank(CAPACITY, stack ->
             stack.getFluid().isSame(ModFluids.HEAVY_COOLANT_SOURCE.get())
+                    || stack.getFluid().isSame(ModFluids.LIQUID_SODIUM_SOURCE.get())
+                    || stack.getFluid().isSame(ModFluids.DISTILLED_WATER_SOURCE.get())
                     || stack.getFluid().isSame(Fluids.WATER)) {
         @Override
         protected void onContentsChanged() {
@@ -39,6 +41,16 @@ public class CoolantInputPortBlockEntity extends BlockEntity {
     public boolean isHeavyCoolant() {
         FluidStack stack = fluidTank.getFluid();
         return !stack.isEmpty() && stack.getFluid().isSame(ModFluids.HEAVY_COOLANT_SOURCE.get());
+    }
+
+    public boolean isLiquidSodium() {
+        FluidStack stack = fluidTank.getFluid();
+        return !stack.isEmpty() && stack.getFluid().isSame(ModFluids.LIQUID_SODIUM_SOURCE.get());
+    }
+
+    public boolean isDistilledWater() {
+        FluidStack stack = fluidTank.getFluid();
+        return !stack.isEmpty() && stack.getFluid().isSame(ModFluids.DISTILLED_WATER_SOURCE.get());
     }
 
     public int drainCoolant(int maxDrain) {

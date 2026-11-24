@@ -1,0 +1,11 @@
+{
+  "remote_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:remote_control_port",
+      "ienuclear:control_cable",
+      "ienuclear:control_desk",
+      "ienuclear:eccs_unit"
+    ]
+  }
+}

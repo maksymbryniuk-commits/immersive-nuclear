@@ -122,6 +122,11 @@ public class ControlDeskBlockEntity extends BlockEntity implements MenuProvider 
             desk.rods = 100;
             desk.activeCapsules = 0;
         }
+        boolean deskLit = desk.linked == 1;
+        if (state.hasProperty(com.ienuclear.reactor.block.ControlDeskBlock.ACTIVE)
+                && state.getValue(com.ienuclear.reactor.block.ControlDeskBlock.ACTIVE) != deskLit) {
+            level.setBlock(pos, state.setValue(com.ienuclear.reactor.block.ControlDeskBlock.ACTIVE, deskLit), 3);
+        }
         desk.setChanged();
     }
 

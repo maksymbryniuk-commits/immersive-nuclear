@@ -88,6 +88,18 @@ public class CoolingTowerBlockEntity extends BlockEntity {
             }
             be.setChanged();
         }
+        // Автовиштовхування дистильованої води в труби / порти води реактора
+        if (!be.waterTank.isEmpty()) {
+            for (Direction d : Direction.values()) {
+                IFluidHandler target = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK, pos.relative(d), d.getOpposite());
+                if (target != null) {
+                    int amt = Math.min(be.waterTank.getFluidAmount(), 1000);
+                    int acc = target.fill(new FluidStack(ModFluids.DISTILLED_WATER_SOURCE.get(), amt), IFluidHandler.FluidAction.EXECUTE);
+                    if (acc > 0) be.waterTank.drain(acc, IFluidHandler.FluidAction.EXECUTE);
+                    if (be.waterTank.isEmpty()) break;
+                }
+            }
+        }
     }
 
     @Override

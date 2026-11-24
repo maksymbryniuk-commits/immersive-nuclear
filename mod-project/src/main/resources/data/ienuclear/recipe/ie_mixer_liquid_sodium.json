@@ -1,0 +1,26 @@
+{
+  "type": "immersiveengineering:mixer",
+  "energy": 4000,
+  "fluid": {
+    "amount": 1000,
+    "tag": "minecraft:water"
+  },
+  "inputs": [
+    {
+      "count": 2,
+      "basePredicate": {
+        "tag": "c:dusts/saltpeter"
+      }
+    },
+    {
+      "count": 2,
+      "basePredicate": {
+        "item": "minecraft:redstone"
+      }
+    }
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "ienuclear:liquid_sodium"
+  }
+}

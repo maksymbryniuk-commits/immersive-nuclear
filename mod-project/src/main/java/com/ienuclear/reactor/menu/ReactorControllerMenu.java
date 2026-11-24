@@ -25,7 +25,7 @@ public class ReactorControllerMenu extends AbstractContainerMenu {
     public ReactorControllerMenu(int containerId, Inventory playerInv, RegistryFriendlyByteBuf extraData) {
         this(containerId, playerInv,
                 (ReactorControllerBlockEntity) playerInv.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(13));
+                new SimpleContainerData(15));
     }
 
     public ReactorControllerMenu(int containerId, Inventory playerInv,
@@ -51,6 +51,8 @@ public class ReactorControllerMenu extends AbstractContainerMenu {
     public int getControlRodInsertion() { return data.get(10); }
     public int getCoreCount() { return data.get(11); }
     public int getActiveCapsulesCount() { return data.get(12); }
+    public int getCoolingLoopCount() { return data.get(13); }
+    public boolean isEccsReady() { return data.get(14) == 1; }
 
     @Override
     public boolean stillValid(Player player) {

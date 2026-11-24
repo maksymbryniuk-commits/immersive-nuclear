@@ -1,6 +1,8 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/orientable",
   "textures": {
-    "all": "ienuclear:block/spent_fuel_pool"
+    "top": "ienuclear:block/spent_fuel_pool_top",
+    "front": "ienuclear:block/spent_fuel_pool_front",
+    "side": "ienuclear:block/spent_fuel_pool_side"
   }
 }

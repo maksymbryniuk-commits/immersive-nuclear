@@ -4,6 +4,7 @@ import com.ienuclear.reactor.block.SteamTurbineBlock;
 import com.ienuclear.reactor.menu.SteamTurbineMenu;
 import com.ienuclear.reactor.registry.ModBlockEntities;
 import com.ienuclear.reactor.registry.ModBlocks;
+import com.ienuclear.reactor.registry.ModFluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -17,6 +18,10 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -41,6 +46,18 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
 
     private final List<BlockPos> cachedSteamInputs = new ArrayList<>();
     private final List<BlockPos> cachedEnergyOutputs = new ArrayList<>();
+    private final FluidTank exhaustSteamTank = new FluidTank(32_000);
+    private final IFluidHandler exhaustHandler = new IFluidHandler() {
+        @Override public int getTanks() { return 1; }
+        @Override public FluidStack getFluidInTank(int t) { return exhaustSteamTank.getFluid(); }
+        @Override public int getTankCapacity(int t) { return 32_000; }
+        @Override public boolean isFluidValid(int t, FluidStack s) { return false; }
+        @Override public int fill(FluidStack r, FluidAction a) { return 0; }
+        @Override public FluidStack drain(FluidStack r, FluidAction a) { return exhaustSteamTank.drain(r, a); }
+        @Override public FluidStack drain(int m, FluidAction a) { return exhaustSteamTank.drain(m, a); }
+    };
+
+    public IFluidHandler getExhaustHandler() { return exhaustHandler; }
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -177,6 +194,12 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
                 int feGenerated = (int) Math.round(totalDrained * 30.0 * rpmFactor);
                 turbine.insertEnergyEvenly(feGenerated);
                 turbine.lastFePerTick = feGenerated;
+
+                // Замкнутий цикл пари: випуск відпрацьованої пари для Градирні!
+                int exhaustAmt = Math.min(turbine.exhaustSteamTank.getSpace(), Math.max(1, totalDrained / 10));
+                if (exhaustAmt > 0) {
+                    turbine.exhaustSteamTank.fill(new FluidStack(ModFluids.EXHAUST_STEAM_SOURCE.get(), exhaustAmt), IFluidHandler.FluidAction.EXECUTE);
+                }
             } else {
                 turbine.lastFePerTick = 0;
                 if (turbine.rpm > 0) {
@@ -189,6 +212,19 @@ public class SteamTurbineBlockEntity extends BlockEntity implements MenuProvider
             turbine.lastFePerTick = 0;
             if (turbine.rpm > 0) {
                 turbine.rpm = Math.max(0, turbine.rpm - 40);
+            }
+        }
+
+        // Виштовхування відпрацьованої пари в сусідні труби / градирню
+        if (!turbine.exhaustSteamTank.isEmpty()) {
+            for (Direction d : Direction.values()) {
+                IFluidHandler target = level.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(d), d.getOpposite());
+                if (target != null) {
+                    int amt = Math.min(turbine.exhaustSteamTank.getFluidAmount(), 1000);
+                    int acc = target.fill(new FluidStack(ModFluids.EXHAUST_STEAM_SOURCE.get(), amt), IFluidHandler.FluidAction.EXECUTE);
+                    if (acc > 0) turbine.exhaustSteamTank.drain(acc, IFluidHandler.FluidAction.EXECUTE);
+                    if (turbine.exhaustSteamTank.isEmpty()) break;
+                }
             }
         }
 

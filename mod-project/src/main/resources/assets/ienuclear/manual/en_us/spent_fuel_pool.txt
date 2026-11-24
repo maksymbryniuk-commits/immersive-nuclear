@@ -1,0 +1,12 @@
+Spent Fuel Pool (3x3x3)
+Cooling Basin for Depleted Fuel Rods
+
+<&spent_fuel_pool_mb>
+
+A 3x3x3 basin built from Reactor Casing & Reactor Glass with 2x Water source blocks in the center shaft and the Spent Fuel Pool controller on the front center.
+
+Operation:
+- Exhausted Uranium/Enriched/MOX capsules from Reactors become hot Depleted Fuel Rods.
+- Cooling them in the 3x3x3 Pool yields Depleted Uranium Ingots + recovers Empty Fuel Rods (2x faster with Distilled Water!).
+- Bury uncooled waste inside a Nuclear Waste Cask underground (out of sunlight).
+<&pool_craft>

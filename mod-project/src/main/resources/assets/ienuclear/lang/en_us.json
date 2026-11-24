@@ -74,5 +74,6 @@
   "item.ienuclear.liquid_sodium_bucket": "Liquid Sodium Bucket",
   "item.ienuclear.hot_coolant_bucket": "Hot Coolant Bucket",
   "item.ienuclear.distilled_water_bucket": "Distilled Water Bucket",
-  "item.ienuclear.exhaust_steam_bucket": "Exhaust Steam Bucket"
+  "item.ienuclear.exhaust_steam_bucket": "Exhaust Steam Bucket",
+  "message.ienuclear.pool_incomplete": "Spent Fuel Pool 3x3x3 incomplete! Build a 3x3x3 casing basin with 2 water blocks inside."
 }

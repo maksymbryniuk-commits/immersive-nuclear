@@ -1,5 +1,13 @@
-Gas Centrifuge
-Uranium Enrichment
-The Gas Centrifuge (3x4x2) uses Steel Scaffolding, Sheetmetal, and Heavy/Light Engineering blocks.
+Gas Centrifuge (3x4x2)
+Isotope Enrichment & Rotor Inertia
 
-It requires 1024 FE/t to spin up the rotor to 60,000 RPM. Separation starts only above 80% RPM (48,000 RPM), splitting UF6 into Enriched U-235 and Depleted UF6.
+<&gas_centrifuge_mb>
+
+Multiblock (3 wide x 4 tall x 2 deep) using Steel Scaffolding, Light & Heavy Engineering Blocks, Steel Sheetmetal, and Radiators.
+
+Mechanics:
+- Consumes 1024 FE/t to accelerate the rotor up to 60,000 RPM.
+- Separation starts only above 80% RPM (48,000 RPM), splitting UF6 into Enriched U-235 and Depleted UF6.
+- Cascading Enriched U-235 produces Tritium Cells!
+- Use Fuel Rod Assembler to build Uranium, Enriched, MOX & Thorium capsules:
+<&centrifuge_craft>

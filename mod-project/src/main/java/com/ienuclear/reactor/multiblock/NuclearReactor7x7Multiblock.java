@@ -53,11 +53,13 @@ public class NuclearReactor7x7Multiblock implements MultiblockHandler.IMultibloc
             public NonNullList<ItemStack> getTotalMaterials() {
                 return NonNullList.of(
                         ItemStack.EMPTY,
-                        new ItemStack(ModBlocks.REACTOR_CASING.get(), 196),
+                        new ItemStack(ModBlocks.REACTOR_CASING.get(), 194),
                         new ItemStack(ModBlocks.REACTOR_GLASS.get(), 12),
                         new ItemStack(ModBlocks.REACTOR_CORE_ROD.get(), 27),
+                        new ItemStack(ModBlocks.COOLING_LOOP.get(), 16),
                         new ItemStack(ModBlocks.REACTOR_CONTROLLER.get(), 1),
-                        new ItemStack(ModBlocks.FUEL_ACCESS_HATCH.get(), 1),
+                        new ItemStack(ModBlocks.FUEL_ACCESS_HATCH.get(), 2),
+                        new ItemStack(ModBlocks.REMOTE_CONTROL_PORT.get(), 1),
                         new ItemStack(ModBlocks.COOLANT_INPUT_PORT.get(), 2),
                         new ItemStack(ModBlocks.WATER_INPUT_PORT.get(), 2),
                         new ItemStack(ModBlocks.STEAM_OUTPUT_PORT.get(), 2)
@@ -78,6 +80,8 @@ public class NuclearReactor7x7Multiblock implements MultiblockHandler.IMultibloc
         Block water = ModBlocks.WATER_INPUT_PORT.get();
         Block steam = ModBlocks.STEAM_OUTPUT_PORT.get();
         Block hatch = ModBlocks.FUEL_ACCESS_HATCH.get();
+        Block coolingLoop = ModBlocks.COOLING_LOOP.get();
+        Block remotePort = ModBlocks.REMOTE_CONTROL_PORT.get();
 
         for (int y = 0; y < 7; y++) {
             for (int z = 0; z < 7; z++) {
@@ -87,8 +91,10 @@ public class NuclearReactor7x7Multiblock implements MultiblockHandler.IMultibloc
                         BlockState state = casing.defaultBlockState();
                         if (y == 3 && x == 3 && z == 6) {
                             state = controller.defaultBlockState().setValue(ReactorControllerBlock.FACING, Direction.SOUTH);
-                        } else if (y == 6 && x == 3 && z == 3) {
+                        } else if (y == 6 && z == 3 && (x == 2 || x == 4)) {
                             state = hatch.defaultBlockState();
+                        } else if (y == 3 && x == 1 && z == 6) {
+                            state = remotePort.defaultBlockState();
                         } else if (x == 0 && y == 3 && (z == 2 || z == 4)) {
                             state = coolant.defaultBlockState();
                         } else if (x == 6 && y == 3 && (z == 2 || z == 4)) {
@@ -102,6 +108,9 @@ public class NuclearReactor7x7Multiblock implements MultiblockHandler.IMultibloc
                     } else if (x >= 2 && x <= 4 && y >= 2 && y <= 4 && z >= 2 && z <= 4) {
                         // 3x3x3 блок активної зони (27 ядер) в центрі 7x7x7 реактора!
                         list.add(new StructureBlockInfo(new BlockPos(x, y, z), core.defaultBlockState(), null));
+                    } else if ((x == 1 || x == 5) && (z == 1 || z == 5) && y >= 2 && y <= 5) {
+                        // 16 блоків охолоджувального контуру по кутах внутрішньої шахти
+                        list.add(new StructureBlockInfo(new BlockPos(x, y, z), coolingLoop.defaultBlockState(), null));
                     }
                 }
             }

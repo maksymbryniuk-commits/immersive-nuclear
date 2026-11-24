@@ -1,5 +1,12 @@
-Heat Exchanger
+Heat Exchanger (3x3x5)
 Two-Loop Thermodynamics
-The Heat Exchanger (3x3x5) separates the primary hot coolant or Liquid Sodium loop from the clean secondary water loop.
 
-Liquid Sodium doubles heat transfer. Never let secondary water run dry above 1000 C or tubes will rupture!
+<&heat_exchanger_mb>
+
+A 3x3x5 shell-and-tube exchanger built with Steel Scaffolding, Steel Sheetmetal, Fluid Pipes, and the Heat Exchanger Controller.
+
+Loops:
+- Primary Loop: Hot Coolant (from Reactor Controller) or Liquid Sodium (2x heat transfer!).
+- Secondary Loop: Clean Distilled Water boiled into Hot Steam for turbines.
+- Warning: Running dry at >= 1000 C ruptures the tubes and contaminates steam!
+<&hx_craft>

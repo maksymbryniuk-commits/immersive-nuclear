@@ -74,5 +74,6 @@
   "item.ienuclear.liquid_sodium_bucket": "Відро рідкого натрію",
   "item.ienuclear.hot_coolant_bucket": "Відро гарячого теплоносія",
   "item.ienuclear.distilled_water_bucket": "Відро дистильованої води",
-  "item.ienuclear.exhaust_steam_bucket": "Відро відпрацьованої пари"
+  "item.ienuclear.exhaust_steam_bucket": "Відро відпрацьованої пари",
+  "message.ienuclear.pool_incomplete": "Мультиблок басейну 3x3x3 неповний! Побудуйте корпус 3x3x3 з 2 блоками води по центру."
 }

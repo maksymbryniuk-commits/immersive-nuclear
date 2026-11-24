@@ -4,6 +4,7 @@ import com.ienuclear.reactor.block.ReactorControllerBlock;
 import com.ienuclear.reactor.menu.ReactorControllerMenu;
 import com.ienuclear.reactor.registry.ModBlockEntities;
 import com.ienuclear.reactor.registry.ModBlocks;
+import com.ienuclear.reactor.registry.ModFluids;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,14 +18,19 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -56,6 +62,17 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
     private final List<BlockPos> cachedWaterPorts = new ArrayList<>();
     private final List<BlockPos> cachedSteamPorts = new ArrayList<>();
     private final List<BlockPos> cachedFuelHatches = new ArrayList<>();
+    private final List<BlockPos> cachedEccsUnits = new ArrayList<>();
+    private final FluidTank hotCoolantOutputTank = new FluidTank(16_000);
+    private final IFluidHandler drainOnlyHotCoolant = new IFluidHandler() {
+        @Override public int getTanks() { return 1; }
+        @Override public FluidStack getFluidInTank(int t) { return hotCoolantOutputTank.getFluid(); }
+        @Override public int getTankCapacity(int t) { return 16_000; }
+        @Override public boolean isFluidValid(int t, FluidStack s) { return false; }
+        @Override public int fill(FluidStack r, FluidAction a) { return 0; }
+        @Override public FluidStack drain(FluidStack r, FluidAction a) { return hotCoolantOutputTank.drain(r, a); }
+        @Override public FluidStack drain(int m, FluidAction a) { return hotCoolantOutputTank.drain(m, a); }
+    };
     @Nullable
     private BlockPos cachedCenterPos = null;
 
@@ -76,6 +93,8 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                 case 10 -> controlRodInsertion;
                 case 11 -> coreCount;
                 case 12 -> activeCapsulesCount;
+                case 13 -> coolingLoopCount;
+                case 14 -> hasEccsReady() ? 1 : 0;
                 default -> 0;
             };
         }
@@ -85,7 +104,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
 
         @Override
         public int getCount() {
-            return 13;
+            return 15;
         }
     };
 
@@ -103,12 +122,35 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
     public boolean isActive() { return active; }
     public boolean isMultiblockValid() { return multiblockValid; }
 
+    public int getCoolingLoopCount() { return coolingLoopCount; }
+    public IFluidHandler getHotCoolantHandler() { return drainOnlyHotCoolant; }
+
+    public boolean hasEccsReady() {
+        if (level == null) return false;
+        for (BlockPos ep : cachedEccsUnits) {
+            if (level.getBlockEntity(ep) instanceof EccsUnitBlockEntity eccs && eccs.getTank().getFluidAmount() >= 4000) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean triggerEccsFlood() {
         if (level == null) return false;
+        for (BlockPos ep : cachedEccsUnits) {
+            if (level.getBlockEntity(ep) instanceof EccsUnitBlockEntity eccs && eccs.consumeEmergencyCoolant()) {
+                this.temperature = Math.max(AMBIENT_TEMP, this.temperature - 500);
+                this.active = false;
+                this.controlRodInsertion = 100;
+                updateBlockState();
+                setChanged();
+                return true;
+            }
+        }
         for (Direction dir : Direction.values()) {
             BlockPos adj = worldPosition.relative(dir);
             if (level.getBlockEntity(adj) instanceof EccsUnitBlockEntity eccs && eccs.consumeEmergencyCoolant()) {
-                this.temperature = Math.max(AMBIENT_TEMP, this.temperature - 450);
+                this.temperature = Math.max(AMBIENT_TEMP, this.temperature - 500);
                 this.active = false;
                 this.controlRodInsertion = 100;
                 updateBlockState();
@@ -291,6 +333,17 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         this.cachedSteamPorts.addAll(foundSteam);
         this.cachedFuelHatches.clear();
         this.cachedFuelHatches.addAll(foundHatches);
+        this.cachedEccsUnits.clear();
+        for (int x = minX - 1; x <= maxX + 1; x++) {
+            for (int y = minY - 1; y <= maxY + 1; y++) {
+                for (int z = minZ - 1; z <= maxZ + 1; z++) {
+                    BlockPos p = new BlockPos(x, y, z);
+                    if (level.getBlockState(p).is(ModBlocks.ECCS_UNIT.get())) {
+                        this.cachedEccsUnits.add(p);
+                    }
+                }
+            }
+        }
         this.coreCount = foundCores;
         this.coolingLoopCount = foundCoolingLoops;
         this.cachedCenterPos = new BlockPos((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2);
@@ -329,7 +382,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                     totalNetHeat += res.netHeatDelta();
                 }
             }
-            totalNetHeat -= reactor.coolingLoopCount * 2;
+            totalNetHeat -= reactor.coolingLoopCount * 3;
             reactor.activeCapsulesCount = totalCapsules;
 
             if (totalCapsules > 0) {
@@ -342,14 +395,20 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                         reactor.temperature = Math.max(AMBIENT_TEMP, reactor.temperature - 2);
                     }
                 } else if (hasCoolant) {
+                    boolean sodium = reactor.hasLiquidSodium();
                     boolean heavy = reactor.hasHeavyCoolant();
-                    int baseCost = heavy ? 4 : 10;
-                    int coolantCost = Math.max(1, (int) Math.round(baseCost * Math.sqrt(coreScale) * powerFactor));
+                    boolean dist = reactor.hasDistilledCoolant();
+                    double loopDiscount = Math.max(0.5, 1.0 - reactor.coolingLoopCount * 0.04);
+                    int baseCost = sodium ? 2 : (heavy ? 4 : (dist ? 6 : 10));
+                    int coolantCost = Math.max(1, (int) Math.round(baseCost * Math.sqrt(coreScale) * powerFactor * loopDiscount));
                     int drained = reactor.drainCoolant(coolantCost);
-                    int coolingPower = heavy ? 16 : 6;
+                    int coolingPower = (sodium ? 28 : (heavy ? 16 : (dist ? 9 : 6))) + Math.min(18, reactor.coolingLoopCount);
                     int heatDelta = Math.max(-coolingPower, totalNetHeat - coolingPower);
 
                     if (drained > 0) {
+                        if ((sodium || heavy) && reactor.temperature >= 120 && reactor.hotCoolantOutputTank.getSpace() >= drained) {
+                            reactor.hotCoolantOutputTank.fill(new FluidStack(ModFluids.HOT_COOLANT_SOURCE.get(), drained), IFluidHandler.FluidAction.EXECUTE);
+                        }
                         if (reactor.temperature < OPTIMAL_TEMP && totalNetHeat > 0) {
                             reactor.temperature = Math.min(OPTIMAL_TEMP, reactor.temperature + Math.max(2, totalNetHeat / 3));
                         } else {
@@ -385,12 +444,13 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
                     reactor.updateBlockState();
                     level.playSound(null, pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1.0f, 0.7f);
                 } else if (powerFactor > 0.0 && reactor.temperature >= 80) {
-                    // КИП'ЯТІННЯ ВОДИ В ГАРЯЧУ ПАРУ (1 mB води -> 10 mB гарячої пари)
+                    // КИП'ЯТІННЯ ВОДИ В ГАРЯЧУ ПАРУ (звичайна: 1->10 mB, дистильована: +25% чистої пари!)
+                    boolean hasDistilled = reactor.hasDistilledWaterPort();
                     int desiredWater = (int) Math.max(1, Math.round(
                             7.0 * totalGridPower * coreScale * Math.min(1.6, reactor.temperature / 600.0)
                     ));
                     int waterUsed = reactor.drainWater(desiredWater);
-                    int steamProduced = waterUsed * 10;
+                    int steamProduced = hasDistilled ? (int) Math.round(waterUsed * 12.5) : (waterUsed * 10);
                     if (steamProduced > 0) {
                         reactor.insertSteam(steamProduced);
                     }
@@ -433,6 +493,15 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
             AABB radBox = new AABB(center).inflate(8.0);
             List<Player> nearby = serverLevel.getEntitiesOfClass(Player.class, radBox);
             for (Player player : nearby) {
+                if (NuclearWasteCaskBlockEntity.hasFullHazmat(player)) {
+                    if (gameTime % 40 == 0) {
+                        ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+                        if (chest.isDamageableItem() && chest.getDamageValue() < chest.getMaxDamage() - 1) {
+                            chest.setDamageValue(chest.getDamageValue() + 1);
+                        }
+                    }
+                    continue;
+                }
                 if (!player.isCreative() && !player.isSpectator() && !player.hasEffect(MobEffects.DAMAGE_RESISTANCE)) {
                     player.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 0));
                     player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 80, 0));
@@ -501,6 +570,30 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         if (level == null) return false;
         for (BlockPos p : cachedCoolantPorts) {
             if (level.getBlockEntity(p) instanceof CoolantInputPortBlockEntity port && port.isHeavyCoolant()) return true;
+        }
+        return false;
+    }
+
+    private boolean hasLiquidSodium() {
+        if (level == null) return false;
+        for (BlockPos p : cachedCoolantPorts) {
+            if (level.getBlockEntity(p) instanceof CoolantInputPortBlockEntity port && port.isLiquidSodium()) return true;
+        }
+        return false;
+    }
+
+    private boolean hasDistilledCoolant() {
+        if (level == null) return false;
+        for (BlockPos p : cachedCoolantPorts) {
+            if (level.getBlockEntity(p) instanceof CoolantInputPortBlockEntity port && port.isDistilledWater()) return true;
+        }
+        return false;
+    }
+
+    private boolean hasDistilledWaterPort() {
+        if (level == null) return false;
+        for (BlockPos p : cachedWaterPorts) {
+            if (level.getBlockEntity(p) instanceof WaterInputPortBlockEntity port && port.isDistilledWater()) return true;
         }
         return false;
     }
@@ -584,6 +677,8 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         tag.putInt("Temperature", temperature);
         tag.putInt("ControlRods", controlRodInsertion);
         tag.putInt("CoreCount", coreCount);
+        tag.putInt("CoolingLoops", coolingLoopCount);
+        tag.put("HotCoolant", hotCoolantOutputTank.writeToNBT(registries, new CompoundTag()));
     }
 
     @Override
@@ -593,5 +688,7 @@ public class ReactorControllerBlockEntity extends BlockEntity implements MenuPro
         temperature = tag.getInt("Temperature");
         controlRodInsertion = Math.max(0, Math.min(100, tag.getInt("ControlRods")));
         coreCount = tag.getInt("CoreCount");
+        coolingLoopCount = tag.getInt("CoolingLoops");
+        hotCoolantOutputTank.readFromNBT(registries, tag.getCompound("HotCoolant"));
     }
 }

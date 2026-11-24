@@ -1,1 +1,8 @@
-{}
+{
+  "tower_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:cooling_tower"
+    ]
+  }
+}

@@ -1,1 +1,8 @@
-{}
+{
+  "hx_craft": {
+    "type": "crafting",
+    "recipes": [
+      "ienuclear:heat_exchanger_controller"
+    ]
+  }
+}

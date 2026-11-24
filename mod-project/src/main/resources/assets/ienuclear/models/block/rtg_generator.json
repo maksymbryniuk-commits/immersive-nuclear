@@ -1,6 +1,12 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "ienuclear:block/rtg_generator"
+    "up": "ienuclear:block/rtg_generator_top",
+    "down": "ienuclear:block/rtg_generator_top",
+    "north": "ienuclear:block/rtg_generator_side",
+    "south": "ienuclear:block/rtg_generator_side",
+    "east": "ienuclear:block/rtg_generator_side",
+    "west": "ienuclear:block/rtg_generator_side",
+    "particle": "ienuclear:block/rtg_generator_side"
   }
 }

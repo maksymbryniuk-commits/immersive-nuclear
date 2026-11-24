@@ -16,14 +16,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
- * Меню охолоджувального басейну.
+ * Меню мультиблокового охолоджувального басейну 3×3×3.
  */
 public class SpentFuelPoolMenu extends AbstractContainerMenu {
     private final SpentFuelPoolBlockEntity blockEntity;
     private final ContainerData data;
 
     public SpentFuelPoolMenu(int id, Inventory inv, FriendlyByteBuf buf) {
-        this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(2));
+        this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(3));
     }
 
     public SpentFuelPoolMenu(int id, Inventory inv, BlockEntity entity, ContainerData data) {
@@ -32,7 +32,7 @@ public class SpentFuelPoolMenu extends AbstractContainerMenu {
         this.data = data;
 
         for (int i = 0; i < 9; i++) {
-            addSlot(new SlotItemHandler(blockEntity.getInventory(), i, 8 + i * 18, 36));
+            addSlot(new SlotItemHandler(blockEntity.getInventory(), i, 8 + i * 18, 42));
         }
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 9; c++) {

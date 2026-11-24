@@ -1,7 +1,11 @@
 package com.ienuclear.reactor;
 
+import com.ienuclear.reactor.multiblock.CoolingTowerMultiblock;
+import com.ienuclear.reactor.multiblock.GasCentrifugeMultiblock;
+import com.ienuclear.reactor.multiblock.HeatExchangerMultiblock;
 import com.ienuclear.reactor.multiblock.NuclearReactor7x7Multiblock;
 import com.ienuclear.reactor.multiblock.NuclearReactorMultiblock;
+import com.ienuclear.reactor.multiblock.SpentFuelPoolMultiblock;
 import com.ienuclear.reactor.multiblock.SteamTurbineMultiblock;
 import com.ienuclear.reactor.network.AdjustControlRodPayload;
 import com.ienuclear.reactor.network.ToggleReactorPayload;
@@ -123,6 +127,10 @@ public class IENuclearMod {
             NuclearReactorMultiblock.register();
             NuclearReactor7x7Multiblock.register();
             SteamTurbineMultiblock.register();
+            GasCentrifugeMultiblock.register();
+            SpentFuelPoolMultiblock.register();
+            CoolingTowerMultiblock.register();
+            HeatExchangerMultiblock.register();
         });
     }
 
@@ -183,6 +191,9 @@ public class IENuclearMod {
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.HEAT_EXCHANGER_CONTROLLER.get(), (be, s) -> be.getFluidHandler());
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.ECCS_UNIT.get(), (be, s) -> be.getTank());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.RTG_GENERATOR.get(), (be, s) -> be.getEnergyStorage());
+        // Замкнуті цикли теплоносія і відпрацьованої пари на контролерах реактора та турбіни
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.REACTOR_CONTROLLER.get(), (be, s) -> be.getHotCoolantHandler());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntities.STEAM_TURBINE.get(), (be, s) -> be.getExhaustHandler());
     }
 
     private void registerPayloads(RegisterPayloadHandlersEvent event) {

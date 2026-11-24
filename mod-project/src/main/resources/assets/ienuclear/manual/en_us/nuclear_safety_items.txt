@@ -1,0 +1,8 @@
+Hazmat Suit & Isotope Tech
+Radiation Protection, DU Slugs & RTG
+
+- Full Hazmat Suit protects completely against reactor radiation, exposed waste, and Molten Corium! (Geiger Counter also clicks passively near radiation).
+<&hazmat_craft>
+- RTG Generator: Insert Tritium Cell (128 FE/t) or Plutonium Dust (64 FE/t) for permanent remote base power!
+- Depleted Uranium Block & AP Uranium Slugs for heavy armor-piercing ammunition.
+<&side_craft>

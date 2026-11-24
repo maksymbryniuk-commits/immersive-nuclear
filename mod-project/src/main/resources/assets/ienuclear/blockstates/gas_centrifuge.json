@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "ienuclear:block/gas_centrifuge"
+    },
+    "facing=south": {
+      "model": "ienuclear:block/gas_centrifuge",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "ienuclear:block/gas_centrifuge",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "ienuclear:block/gas_centrifuge",
+      "y": 90
     }
   }
 }
