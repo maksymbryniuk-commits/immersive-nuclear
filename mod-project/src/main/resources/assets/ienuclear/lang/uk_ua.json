@@ -75,5 +75,16 @@
   "item.ienuclear.hot_coolant_bucket": "Відро гарячого теплоносія",
   "item.ienuclear.distilled_water_bucket": "Відро дистильованої води",
   "item.ienuclear.exhaust_steam_bucket": "Відро відпрацьованої пари",
-  "message.ienuclear.pool_incomplete": "Мультиблок басейну 3x3x3 неповний! Побудуйте корпус 3x3x3 з 2 блоками води по центру."
+  "message.ienuclear.pool_incomplete": "Мультиблок басейну 3x3x3 неповний! Побудуйте корпус 3x3x3 з 2 блоками води по центру.",
+  "jei.ienuclear.gas_centrifuge": "Газова центрифуга (3x4x2)",
+  "jei.ienuclear.fuel_rod_assembler": "Складальний верстат ТВЕЛів",
+  "jei.ienuclear.spent_fuel_pool": "Охолоджувальний басейн (3x3x3)",
+  "jei.ienuclear.thermodynamics": "Термодинаміка та Паровий цикл",
+  "jei.ienuclear.info.reactor_controller": "Контролер мультиблокового реактора (3x3x3..7x7x7). Паливо завантажується у верхні Люки палива (Fuel Access Hatch). Приймає Liquid Sodium, Heavy Coolant і Distilled Water (+25% пари). Видає Hot Coolant трубою прямо з контролера.",
+  "jei.ienuclear.info.cooling_loop": "Встановлюється всередині активної зони реакторів (особливо 7x7x7). Кожен контур знижує нагрів на -3/тік та зменшує витрату теплоносія до -50%.",
+  "jei.ienuclear.info.control_desk": "Дистанційний пульт керування реактором. З’єднайте з Remote Control Port через Control Cable (до 64 блоків). Має кнопку аварійної зупинки AZ-5 та ECCS Flood.",
+  "jei.ienuclear.info.eccs": "Система аварійного охолодження (16 000 mB). Поставте впритул до будь-якої стінки реактора — при >= 1100 C автоматично заллє ядро та увімкне SCRAM.",
+  "jei.ienuclear.info.waste_cask": "Свинцево-бетонний контейнер до 9 відходів. ОБОВ’ЯЗКОВО закопайте під землю (без прямого доступу до неба), інакше радіація отруїть область!",
+  "jei.ienuclear.info.rtg": "РІТЕГ-генератор: вставте ПКМ Тритієвий елемент (128 FE/t) або Плутоній (64 FE/t) для постійного живлення без палива.",
+  "jei.ienuclear.info.hazmat": "Повний комплект костюма хімзахисту (шолом, куртка, штани, чоботи) повністю захищає від радіації реакторів, коріуму та відходів."
 }

@@ -51,10 +51,19 @@ repositories {
             includeGroup('blusunrize.immersiveengineering')
         }
     }
+    maven {
+        name = 'Jareds maven'
+        url = uri('https://maven.blamejared.com/')
+        content {
+            includeGroup('mezz.jei')
+        }
+    }
 }
 
 dependencies {
     implementation "blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}"
+    compileOnly "mezz.jei:jei-1.21.1-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.21.1-neoforge-api:${jei_version}"
 }
 
 tasks.withType(ProcessResources).configureEach {

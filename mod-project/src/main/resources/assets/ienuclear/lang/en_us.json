@@ -75,5 +75,16 @@
   "item.ienuclear.hot_coolant_bucket": "Hot Coolant Bucket",
   "item.ienuclear.distilled_water_bucket": "Distilled Water Bucket",
   "item.ienuclear.exhaust_steam_bucket": "Exhaust Steam Bucket",
-  "message.ienuclear.pool_incomplete": "Spent Fuel Pool 3x3x3 incomplete! Build a 3x3x3 casing basin with 2 water blocks inside."
+  "message.ienuclear.pool_incomplete": "Spent Fuel Pool 3x3x3 incomplete! Build a 3x3x3 casing basin with 2 water blocks inside.",
+  "jei.ienuclear.gas_centrifuge": "Gas Centrifuge (3x4x2)",
+  "jei.ienuclear.fuel_rod_assembler": "Fuel Rod Assembler",
+  "jei.ienuclear.spent_fuel_pool": "Spent Fuel Pool (3x3x3)",
+  "jei.ienuclear.thermodynamics": "Nuclear Thermodynamics Loop",
+  "jei.ienuclear.info.reactor_controller": "Multiblock Reactor Controller (3x3x3 to 7x7x7). Load fuel in Top Fuel Access Hatches. Supports Liquid Sodium, Heavy Coolant & Distilled Water (+25% steam). Exports Hot Coolant directly from controller.",
+  "jei.ienuclear.info.cooling_loop": "Placed inside the reactor core chamber. Each Cooling Loop reduces net heat by -3/tick and cuts coolant drain by 4% (up to 50%).",
+  "jei.ienuclear.info.control_desk": "Remote Reactor Control Desk with CRT telemetry and AZ-5 emergency SCRAM button. Connect to Remote Control Port using Control Cables (up to 64 blocks).",
+  "jei.ienuclear.info.eccs": "Emergency Core Cooling System (16,000 mB). Place adjacent to any reactor wall to auto-quench overheated reactors at >= 1100 C.",
+  "jei.ienuclear.info.waste_cask": "Holds up to 9 radioactive waste items. Must be buried underground (cannot see sky), otherwise it leaks chunk radiation!",
+  "jei.ienuclear.info.rtg": "Radioisotope Thermoelectric Generator: right-click with Tritium Cell (128 FE/t) or Plutonium Dust (64 FE/t) for permanent base power.",
+  "jei.ienuclear.info.hazmat": "Full Hazmat Suit protects against radiation from reactors, exposed nuclear waste, and Molten Corium."
 }
