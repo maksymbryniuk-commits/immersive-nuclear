@@ -169,7 +169,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'block',
     zipPath: 'src/main/resources/assets/ienuclear/textures/block/reactor_casing.png',
     description: 'Броньована сталева обшивка Immersive Engineering з характерними промисловими заклепками',
-    rawBase64: RAW_IE_TEXTURES['sheetmetal_steel'],
+    rawBase64: RAW_IE_TEXTURES['mod_block_reactor_casing'],
     palette: {
       '#': '#1E232B',
       D: '#2A303C',
@@ -207,7 +207,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'block',
     zipPath: 'src/main/resources/assets/ienuclear/textures/block/reactor_core_rod.png',
     description: 'Масивна активна зона з теплообмінними ребрами та центральним каналом поділу урану',
-    rawBase64: RAW_IE_TEXTURES['generator'],
+    rawBase64: RAW_IE_TEXTURES['mod_block_reactor_core_rod'],
     palette: {
       '#': '#151922',
       D: '#252C3B',
@@ -247,7 +247,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'block',
     zipPath: 'src/main/resources/assets/ienuclear/textures/block/reactor_glass.png',
     description: 'Справжнє армоване радіаційно-стійке скло Immersive Engineering',
-    rawBase64: RAW_IE_TEXTURES['panzerglass'],
+    rawBase64: RAW_IE_TEXTURES['mod_block_reactor_glass'],
     palette: {
       '#': '#1D242C',
       M: '#3D4958',
@@ -284,6 +284,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'block',
     zipPath: 'src/main/resources/assets/ienuclear/textures/block/reactor_controller_front.png',
     description: 'Лицьова індустріальна панель контролера з круглим манометром та рубильником',
+    rawBase64: RAW_IE_TEXTURES['mod_block_reactor_controller_front'],
     palette: {
       '#': '#1B212B',
       D: '#2A323F',
@@ -324,6 +325,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'block',
     zipPath: 'src/main/resources/assets/ienuclear/textures/block/reactor_controller_front_active.png',
     description: 'Лицьова індустріальна панель з активним пірометром та зеленим сигналом розгону',
+    rawBase64: RAW_IE_TEXTURES['mod_block_reactor_controller_front_active'],
     palette: {
       '#': '#1B212B',
       D: '#2A323F',
@@ -366,7 +368,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'block',
     zipPath: 'src/main/resources/assets/ienuclear/textures/block/coolant_input_port.png',
     description: 'Масивний рідинний фланець Immersive Engineering для підключення труб Fluid Pipe',
-    rawBase64: RAW_IE_TEXTURES['fluid_pump_side_in'],
+    rawBase64: RAW_IE_TEXTURES['mod_block_coolant_input_port'],
     palette: {
       '#': '#1C222C',
       M: '#3C4758',
@@ -406,7 +408,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'block',
     zipPath: 'src/main/resources/assets/ienuclear/textures/block/energy_output_port.png',
     description: 'Високовольтний енергетичний ізолятор Immersive Engineering для відбору FE',
-    rawBase64: RAW_IE_TEXTURES['connector_hv'],
+    rawBase64: RAW_IE_TEXTURES['mod_block_energy_output_port'],
     palette: {
       '#': '#1B212B',
       M: '#3C4758',
@@ -450,6 +452,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'item',
     zipPath: 'src/main/resources/assets/ienuclear/textures/item/empty_fuel_rod.png',
     description: 'Герметична кварцово-сталева циліндрична капсула з різьбовими кришками для палива',
+    rawBase64: RAW_IE_TEXTURES['mod_item_empty_fuel_rod'],
     palette: {
       '.': '#00000000',
       O: '#1E242E',
@@ -489,6 +492,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'item',
     zipPath: 'src/main/resources/assets/ienuclear/textures/item/nuclear_fuel_rod.png',
     description: 'Споряджена капсула з пресованими таблетками природного урану в захисній оболонці',
+    rawBase64: RAW_IE_TEXTURES['mod_item_nuclear_fuel_rod'],
     palette: {
       '.': '#00000000',
       O: '#1E242E',
@@ -530,6 +534,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'item',
     zipPath: 'src/main/resources/assets/ienuclear/textures/item/enriched_nuclear_fuel_rod.png',
     description: 'Високозбагачена капсула U-235 із попереджувальними смугами та інтенсивним світінням',
+    rawBase64: RAW_IE_TEXTURES['mod_item_enriched_nuclear_fuel_rod'],
     palette: {
       '.': '#00000000',
       O: '#0F172A',
@@ -571,6 +576,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'item',
     zipPath: 'src/main/resources/assets/ienuclear/textures/item/depleted_fuel_rod.png',
     description: 'Опалена розтріскана капсула з радіоактивним попелом та відпрацьованим шлаком',
+    rawBase64: RAW_IE_TEXTURES['mod_item_depleted_fuel_rod'],
     palette: {
       '.': '#00000000',
       O: '#18181B',
@@ -615,6 +621,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'item',
     zipPath: 'src/main/resources/assets/ienuclear/textures/item/coolant_bucket.png',
     description: 'Класичне залізне відро Minecraft із боро-водним охолоджувачем Heavy Coolant',
+    rawBase64: RAW_IE_TEXTURES['mod_item_coolant_bucket'],
     palette: {
       '.': '#00000000',
       '#': '#383838', // Vanilla bucket dark border
@@ -655,6 +662,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'item',
     zipPath: 'src/main/resources/assets/ienuclear/textures/item/uranium_hexafluoride_bucket.png',
     description: 'Класичне залізне відро Minecraft із радіоактивним гексафторидом урану',
+    rawBase64: RAW_IE_TEXTURES['mod_item_uranium_hexafluoride_bucket'],
     palette: {
       '.': '#00000000',
       '#': '#383838', // Vanilla bucket dark border
@@ -695,6 +703,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'item',
     zipPath: 'src/main/resources/assets/ienuclear/textures/item/enriched_uranium_bucket.png',
     description: 'Класичне залізне відро Minecraft зі світною смарагдовою рідиною U-235',
+    rawBase64: RAW_IE_TEXTURES['mod_item_enriched_uranium_bucket'],
     palette: {
       '.': '#00000000',
       '#': '#383838', // Vanilla bucket dark border
@@ -739,7 +748,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'item',
     zipPath: 'src/main/resources/assets/ienuclear/textures/item/yellowcake_uranium.png',
     description: 'Жовтий оксид урану U3O8 у формі характерного пилу Immersive Engineering',
-    rawBase64: RAW_IE_TEXTURES['metal_dust_uranium'],
+    rawBase64: RAW_IE_TEXTURES['mod_item_yellowcake_uranium'],
     palette: {
       '.': '#00000000',
       O: '#713F12',
@@ -777,6 +786,7 @@ export const PIXEL_TEXTURE_DEFS: PixelTextureDef[] = [
     kind: 'item',
     zipPath: 'src/main/resources/assets/ienuclear/textures/item/enriched_uranium_pellet.png',
     description: 'Надщільна паливна таблетка з діоксиду збагаченого урану зі станка IE Metal Press',
+    rawBase64: RAW_IE_TEXTURES['mod_item_enriched_uranium_pellet'],
     palette: {
       '.': '#00000000',
       O: '#064E3B',

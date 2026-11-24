@@ -120,28 +120,48 @@ export function TexturesGalleryView() {
 
           {/* 16x16 Pixel Grid Zoom Preview */}
           <div className="bg-[#0B0E14] border border-slate-800 rounded-xl p-5 flex flex-col items-center gap-4">
-            <div
-              className="grid grid-cols-16 border border-slate-700"
-              style={{ width: '224px', height: '224px' }}
-              aria-label={`Піксельна сітка 16 на 16 для ${selected.nameUk}`}
-            >
-              {selected.grid.map((row, y) =>
-                Array.from({ length: 16 }, (_, x) => {
-                  const ch = row[x] ?? '.';
-                  const hex = selected.palette[ch] ?? '#00000000';
-                  const isTransparent = hex.endsWith('00');
-                  return (
-                    <div
-                      key={`${x}-${y}`}
-                      className="border-[0.5px] border-slate-900/40"
-                      style={{
-                        backgroundColor: isTransparent ? 'transparent' : hex,
-                      }}
-                    />
-                  );
-                })
-              )}
-            </div>
+            {selected.rawBase64 ? (
+              <div
+                className="relative border border-slate-700 bg-[#07090D]"
+                style={{ width: '224px', height: '224px' }}
+                aria-label={`Збільшена 16x16 текстура для ${selected.nameUk}`}
+              >
+                <img
+                  src={selected.dataUrl}
+                  alt={selected.nameUk}
+                  className="w-full h-full"
+                  style={{ imageRendering: 'pixelated' }}
+                />
+                <div className="absolute inset-0 grid grid-cols-16 pointer-events-none">
+                  {Array.from({ length: 256 }, (_, i) => (
+                    <div key={i} className="border-[0.5px] border-slate-950/25" />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div
+                className="grid grid-cols-16 border border-slate-700"
+                style={{ width: '224px', height: '224px' }}
+                aria-label={`Піксельна сітка 16 на 16 для ${selected.nameUk}`}
+              >
+                {selected.grid.map((row, y) =>
+                  Array.from({ length: 16 }, (_, x) => {
+                    const ch = row[x] ?? '.';
+                    const hex = selected.palette[ch] ?? '#00000000';
+                    const isTransparent = hex.endsWith('00');
+                    return (
+                      <div
+                        key={`${x}-${y}`}
+                        className="border-[0.5px] border-slate-900/40"
+                        style={{
+                          backgroundColor: isTransparent ? 'transparent' : hex,
+                        }}
+                      />
+                    );
+                  })
+                )}
+              </div>
+            )}
 
             <div className="flex items-center gap-6 text-xs font-mono text-slate-400">
               <span className="inline-flex items-center gap-1.5">
